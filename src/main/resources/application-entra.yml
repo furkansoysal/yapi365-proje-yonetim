@@ -1,0 +1,20 @@
+# Canlı ortam: Microsoft 365 (Entra ID) ile SSO.
+# Entra ID → App registrations → Redirect URI: https://<alan-adı>/login/oauth2/code/azure
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          azure:
+            client-id: ${ENTRA_CLIENT_ID}
+            client-secret: ${ENTRA_CLIENT_SECRET}
+            scope: openid,profile,email
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+        provider:
+          azure:
+            issuer-uri: https://login.microsoftonline.com/${ENTRA_TENANT_ID}/v2.0
+            user-name-attribute: preferred_username
+
+app:
+  demo-data: false

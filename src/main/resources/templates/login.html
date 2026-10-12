@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Giriş')}"></head>
+<body>
+<div class="login">
+    <div class="box">
+        <h1>Yapı<span style="color:#2e75b6">365</span></h1>
+        <p class="sub">Proje Yönetim Sistemi</p>
+
+        <button class="ms" type="button" disabled title="Canlı ortamda 'entra' profili ile aktif olur">
+            <i><b style="background:#f25022"></b><b style="background:#7fba00"></b><b style="background:#00a4ef"></b><b style="background:#ffb900"></b></i>
+            Microsoft 365 hesabı ile giriş
+        </button>
+        <p class="muted" style="font-size:12px">Canlı ortamda giriş yalnızca Microsoft 365 hesabı ile yapılır. Aşağıdaki form demo ortamı içindir.</p>
+
+        <div class="flash err" th:if="${param.error}">E-posta veya şifre hatalı</div>
+        <div class="flash ok" th:if="${param.logout}">Çıkış yapıldı</div>
+
+        <form th:action="@{/login}" method="post" id="f">
+            <label>E-posta</label><input name="username" id="u" required>
+            <label>Şifre</label><input name="password" id="p" type="password" required>
+            <p><button class="btn" style="width:100%">Giriş</button></p>
+        </form>
+
+        <div class="demo-users">
+            <label>Demo kullanıcılar (şifre: demo) - farklı rollerle menü ve yetkilerin nasıl değiştiğini görün</label>
+            <button type="button" class="btn sec sm" th:each="u : ${demoUsers}"
+                    th:attr="data-email=${u.email}"
+                    onclick="document.getElementById('u').value=this.dataset.email;document.getElementById('p').value='demo';document.getElementById('f').submit()">
+                <b th:text="${u.displayName}"></b> <span class="muted" th:text="${u.email}"></span>
+            </button>
+        </div>
+    </div>
+</div>
+</body>
+</html>

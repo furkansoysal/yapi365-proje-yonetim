@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Sözleşme Geçmişi')}"></head>
+<body>
+<div class="app">
+    <aside th:replace="~{fragments/layout :: sidebar('contracts')}"></aside>
+    <main class="main">
+        <header th:replace="~{fragments/layout :: topbar}"></header>
+        <div class="content">
+            <p><a th:href="@{/contracts}">← Sözleşmeler</a></p>
+            <h1 th:text="${contract.contractNo} + ' · değişiklik geçmişi'"></h1>
+            <p class="sub">Kim, ne zaman, hangi alanı neyden neye değiştirdi</p>
+            <div class="card" th:each="h : ${history}">
+                <p><span class="badge" th:text="${h.action}"></span> <b th:text="${h.user}"></b>
+                    <span class="muted" th:text="${@fmt.dt(h.when)}"></span></p>
+                <table th:if="${!h.changes.isEmpty()}">
+                    <tr><th>Alan</th><th>Önce</th><th>Sonra</th></tr>
+                    <tr th:each="ch : ${h.changes}">
+                        <td th:text="${ch.field}"></td>
+                        <td class="muted" th:text="${@fmt.any(ch.before)}"></td>
+                        <td th:text="${@fmt.any(ch.after)}"></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

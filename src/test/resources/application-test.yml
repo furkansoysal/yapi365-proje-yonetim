@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:yapi365;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+  thymeleaf:
+    cache: false
+app:
+  demo-data: true
+  storage:
+    dir: ${java.io.tmpdir}/yapi365-test-files
+  graph:
+    enabled: false

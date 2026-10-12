@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${title} + ' · Yapı365'">Yapı365</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+
+<aside th:fragment="sidebar(active)" class="sidebar">
+    <div class="logo">Yapı<span>365</span></div>
+    <a th:href="@{/}" th:classappend="${active == 'dashboard'} ? 'active'">Gösterge Paneli</a>
+
+    <div class="group">Modüller</div>
+    <a sec:authorize="hasAuthority('DOKUMAN:VIEW')" th:href="@{/documents}" th:classappend="${active == 'documents'} ? 'active'">Doküman Yönetimi</a>
+    <a sec:authorize="hasAuthority('SOZLESME:VIEW')" th:href="@{/contracts}" th:classappend="${active == 'contracts'} ? 'active'">Sözleşmeler</a>
+    <span class="soon">İlerleme Bazlı Faturalama <small>Faz 2</small></span>
+    <span class="soon">Fatura ve Ödeme <small>Faz 2</small></span>
+    <span class="soon">Talep / Claim <small>Faz 2</small></span>
+    <span class="soon">İş Programı (P6 / MSP) <small>Faz 2</small></span>
+    <span class="soon">Personel Puantajı <small>Faz 3</small></span>
+    <span class="soon">Makine / Ekipman <small>Faz 3</small></span>
+    <span class="soon">İş Sağlığı ve Güvenliği <small>Faz 3</small></span>
+    <span class="soon">İnsan Kaynakları <small>Faz 3</small></span>
+
+    <div class="group">Otomasyon</div>
+    <a sec:authorize="hasAuthority('MAIL:VIEW')" th:href="@{/mail}" th:classappend="${active == 'mail'} ? 'active'">Mail Otomasyonu</a>
+
+    <div class="group" sec:authorize="hasAuthority('YONETIM:VIEW')">Yönetim</div>
+    <a sec:authorize="hasAuthority('YONETIM:VIEW')" th:href="@{/admin/roles}" th:classappend="${active == 'roles'} ? 'active'">Roller ve Yetkiler</a>
+    <a sec:authorize="hasAuthority('YONETIM:VIEW')" th:href="@{/admin/audit}" th:classappend="${active == 'audit'} ? 'active'">İşlem Geçmişi</a>
+</aside>
+
+<header th:fragment="topbar" class="topbar">
+    <form th:action="@{/project/select}" method="post" th:if="${projects != null and !projects.isEmpty()}">
+        <span class="muted">Proje</span>
+        <select name="projectId" onchange="this.form.submit()" style="width:auto">
+            <option th:each="p : ${projects}" th:value="${p.id}" th:text="${p.code + ' · ' + p.name}"
+                    th:selected="${currentProject != null and p.id == currentProject.id}"></option>
+        </select>
+    </form>
+    <div class="user" th:if="${me != null}">
+        <span><b th:text="${me.displayName}">Kullanıcı</b> ·
+            <span th:each="r, st : ${me.roles}" th:text="${r.name} + (${st.last} ? '' : ', ')"></span></span>
+        <form th:action="@{/logout}" method="post"><button class="btn sec sm">Çıkış</button></form>
+    </div>
+</header>
+
+<div th:fragment="flash">
+    <div class="flash ok" th:if="${message}" th:text="${message}"></div>
+    <div class="flash err" th:if="${error}" th:text="${error}"></div>
+</div>
+
+</body>
+</html>

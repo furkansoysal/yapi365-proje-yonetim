@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Gösterge Paneli')}"></head>
+<body>
+<div class="app">
+    <aside th:replace="~{fragments/layout :: sidebar('dashboard')}"></aside>
+    <main class="main">
+        <header th:replace="~{fragments/layout :: topbar}"></header>
+        <div class="content">
+            <h1 th:text="${currentProject.name}">Proje</h1>
+            <p class="sub" th:text="${currentProject.code} + ' · ' + ${@fmt.d(today)}"></p>
+
+            <div class="grid g4">
+                <div class="card kpi"><div class="v" th:text="${contractCount}">0</div><div class="l">Sözleşme</div></div>
+                <div class="card kpi"><div class="v" th:text="${documentCount}">0</div><div class="l">Doküman</div></div>
+                <div class="card kpi"><div class="v" th:text="${endingSoon.size() + guaranteesSoon.size()}">0</div><div class="l">60 gün içinde kritik tarih</div></div>
+                <div class="card kpi"><div class="v" th:text="${pendingSync}">0</div><div class="l">SharePoint kuyruğunda</div></div>
+            </div>
+
+            <div class="grid g2">
+                <div class="card">
+                    <h2>Yaklaşan kritik tarihler</h2>
+                    <table>
+                        <tr><th>Sözleşme</th><th>Olay</th><th>Tarih</th><th>Kalan</th></tr>
+                        <tr th:each="c : ${endingSoon}">
+                            <td><b th:text="${c.contractNo}"></b> <span class="muted" th:text="${c.counterparty}"></span></td>
+                            <td>Sözleşme bitişi</td>
+                            <td th:text="${@fmt.d(c.endDate)}"></td>
+                            <td><span class="badge" th:classappend="${@fmt.daysLeft(c.endDate) <= 30} ? 'b-bad' : 'b-warn'" th:text="${@fmt.daysLeft(c.endDate)} + ' gün'"></span></td>
+                        </tr>
+                        <tr th:each="c : ${guaranteesSoon}">
+                            <td><b th:text="${c.contractNo}"></b> <span class="muted" th:text="${c.counterparty}"></span></td>
+                            <td>Teminat mektubu bitişi</td>
+                            <td th:text="${@fmt.d(c.guaranteeExpiry)}"></td>
+                            <td><span class="badge" th:classappend="${@fmt.daysLeft(c.guaranteeExpiry) <= 30} ? 'b-bad' : 'b-warn'" th:text="${@fmt.daysLeft(c.guaranteeExpiry)} + ' gün'"></span></td>
+                        </tr>
+                        <tr th:if="${endingSoon.isEmpty() and guaranteesSoon.isEmpty()}"><td colspan="4" class="muted">Yaklaşan tarih yok</td></tr>
+                    </table>
+                </div>
+                <div class="card">
+                    <h2>Son işlemler</h2>
+                    <table>
+                        <tr><th>Zaman</th><th>Kullanıcı</th><th>İşlem</th></tr>
+                        <tr th:each="e : ${recentAudit}">
+                            <td th:text="${@fmt.dt(e.when)}"></td>
+                            <td th:text="${e.user}"></td>
+                            <td><span class="badge" th:text="${e.action}"></span> <span th:text="${e.entity} + ': ' + ${e.label}"></span></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card" sec:authorize="hasAuthority('MAIL:VIEW')">
+                <h2>Mail otomasyonu - son işlenenler</h2>
+                <table>
+                    <tr><th>Alındı</th><th>Gönderen</th><th>Konu</th><th>Kural</th><th>Sonuç</th></tr>
+                    <tr th:each="l : ${mailLogs}">
+                        <td th:text="${@fmt.dt(l.receivedAt)}"></td>
+                        <td th:text="${l.sender}"></td>
+                        <td th:text="${l.subject}"></td>
+                        <td th:text="${l.matchedRule != null ? l.matchedRule : '-'}"></td>
+                        <td th:text="${l.actionResult}"></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

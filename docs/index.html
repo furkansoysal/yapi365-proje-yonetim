@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yapı365 · Proje Yönetim Sistemi (Demo)</title>
+<style>
+:root{--bg:#f4f6f9;--panel:#fff;--ink:#1d2433;--muted:#667085;--line:#e4e7ec;--brand:#1f4e79;--brand2:#2e75b6;--side:#14243b;--ok:#12805c;--okb:#e7f6ef;--warn:#b54708;--warnb:#fff4e5;--bad:#b42318;--badb:#fdecea;--chip:#eef4fb}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:14px}
+a{color:var(--brand2);text-decoration:none;cursor:pointer}
+button{font:inherit}
+.app{display:flex;min-height:100vh}
+.side{width:236px;background:var(--side);color:#c9d4e3;flex-shrink:0;padding:16px 0;position:sticky;top:0;height:100vh;overflow-y:auto}
+.logo{font-weight:700;font-size:19px;color:#fff;padding:0 20px 14px}.logo span{color:#6fb1ff}
+.grp{font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:#7b8ba3;padding:14px 20px 6px}
+.nav{display:flex;align-items:center;gap:10px;padding:8px 20px;color:#c9d4e3;cursor:pointer;border-left:3px solid transparent}
+.nav:hover{background:#1c3252}.nav.on{background:#22406a;color:#fff;border-left-color:#6fb1ff}
+.nav .ct{margin-left:auto;background:#e5484d;color:#fff;border-radius:9px;font-size:11px;padding:0 6px}
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.top{display:flex;align-items:center;gap:12px;background:var(--panel);border-bottom:1px solid var(--line);padding:10px 22px;flex-wrap:wrap;position:sticky;top:0;z-index:5}
+.top select{width:auto}
+.top .sp{flex:1}
+.who{display:flex;align-items:center;gap:10px}
+.av{width:32px;height:32px;border-radius:50%;background:var(--brand2);color:#fff;display:grid;place-items:center;font-weight:600;font-size:13px}
+.content{padding:22px;max-width:1320px;width:100%}
+h1{font-size:22px;margin:0 0 4px}h2{font-size:15px;margin:0 0 12px}
+.sub{color:var(--muted);margin:0 0 18px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:16px}
+.grid{display:grid;gap:16px}.g4{grid-template-columns:repeat(4,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g2{grid-template-columns:1fr 1fr}.g21{grid-template-columns:2fr 1fr}
+.kpi .v{font-size:26px;font-weight:700}.kpi .l{color:var(--muted);font-size:13px}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-size:12px;color:var(--muted);font-weight:600;background:#fafbfc;white-space:nowrap}
+tr.click{cursor:pointer}tr.click:hover td{background:#f7faff}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.b{display:inline-block;padding:2px 8px;border-radius:10px;font-size:12px;background:var(--chip);color:var(--brand);white-space:nowrap}
+.ok{background:var(--okb);color:var(--ok)}.warn{background:var(--warnb);color:var(--warn)}.bad{background:var(--badb);color:var(--bad)}.grey{background:#f2f4f7;color:#475467}
+.btn{display:inline-flex;align-items:center;gap:6px;background:var(--brand);color:#fff;border:0;border-radius:6px;padding:7px 13px;cursor:pointer;font-size:13px;white-space:nowrap}
+.btn:hover{background:var(--brand2)}.btn.s{background:#fff;color:var(--brand);border:1px solid var(--line)}.btn.s:hover{background:#f7faff}
+.btn.g{background:var(--ok)}.btn.r{background:var(--bad)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.sm{padding:4px 9px;font-size:12px}
+input,select,textarea{border:1px solid #cfd5df;border-radius:6px;padding:7px 9px;font:inherit;width:100%;background:#fff;color:inherit}
+label{display:block;font-size:12px;color:var(--muted);margin:10px 0 4px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.between{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.muted{color:var(--muted)}.small{font-size:12px}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:14px;flex-wrap:wrap}
+.tab{padding:8px 14px;cursor:pointer;border-bottom:2px solid transparent;color:var(--muted)}
+.tab.on{border-color:var(--brand2);color:var(--ink);font-weight:600}
+.steps{display:flex;gap:0;margin:8px 0 4px;flex-wrap:wrap}
+.step{flex:1;min-width:140px;position:relative;padding:10px 12px;border:1px solid var(--line);background:#fafbfc}
+.step:first-child{border-radius:8px 0 0 8px}.step:last-child{border-radius:0 8px 8px 0}
+.step.done{background:var(--okb);border-color:#b7e4cf}.step.cur{background:#eaf3fd;border-color:#9cc7f0}
+.step .t{font-weight:600;font-size:13px}.step .d{font-size:12px;color:var(--muted)}
+.tree div{padding:6px 8px;border-radius:6px;cursor:pointer}.tree div:hover{background:#f2f6fb}.tree div.on{background:#e3eefb;font-weight:600}
+.bar{height:8px;background:#eef1f5;border-radius:4px;overflow:hidden}.bar i{display:block;height:100%;background:var(--brand2)}
+.gantt{position:relative;min-width:860px}
+.g-row{display:grid;grid-template-columns:260px 1fr;border-bottom:1px solid var(--line);align-items:center;min-height:34px}
+.g-name{padding:6px 10px;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.g-track{position:relative;height:34px}
+.g-bar{position:absolute;top:9px;height:16px;border-radius:4px;background:#8db8e6}
+.g-bar.crit{background:#e5484d}.g-bar .p{position:absolute;left:0;top:0;bottom:0;background:rgba(0,0,0,.22);border-radius:4px}
+.g-bar.ms{width:14px!important;height:14px;transform:rotate(45deg);border-radius:2px;top:10px;background:#1d2433}
+.g-head{display:grid;grid-template-columns:260px 1fr;background:#fafbfc;border-bottom:1px solid var(--line);font-size:11px;color:var(--muted)}
+.g-months{position:relative;height:26px;overflow:hidden}.g-months span{position:absolute;top:6px;border-left:1px solid var(--line);padding-left:4px;height:20px;white-space:nowrap}
+.g-today{position:absolute;top:0;bottom:0;width:2px;background:#f79009;z-index:2}
+.pt td,.pt th{padding:4px;text-align:center;font-size:12px}.pt td:first-child,.pt th:first-child{text-align:left;white-space:nowrap}
+.pt input{width:34px;padding:3px;text-align:center}
+.cell-i{background:#f4ebff;color:#6941c6;border-radius:4px;padding:2px 4px}
+.matrix td,.matrix th{text-align:center;padding:5px}.matrix td:first-child,.matrix th:first-child{text-align:left}
+.dot{width:22px;height:22px;border-radius:5px;border:1px solid #cfd5df;background:#fff;cursor:pointer;padding:0;font-size:11px}
+.dot.on{background:var(--brand2);border-color:var(--brand2);color:#fff}
+.alert{padding:10px 14px;border-radius:8px;margin-bottom:12px;display:flex;gap:10px;align-items:flex-start}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#1d2433;color:#fff;padding:10px 18px;border-radius:8px;z-index:50;opacity:0;transition:.25s;pointer-events:none;max-width:90vw}
+.toast.on{opacity:1}
+.drawer-bg{position:fixed;inset:0;background:rgba(16,24,40,.35);z-index:20;display:none}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:560px;max-width:100vw;background:#fff;z-index:21;overflow-y:auto;padding:22px;box-shadow:-8px 0 30px rgba(0,0,0,.15);transform:translateX(100%);transition:.25s}
+.drawer.on{transform:none}.drawer-bg.on{display:block}
+.x{float:right;background:none;border:0;font-size:22px;cursor:pointer;color:var(--muted)}
+.bot-btn{position:fixed;right:22px;bottom:22px;width:56px;height:56px;border-radius:50%;background:var(--brand);color:#fff;border:0;font-size:24px;cursor:pointer;box-shadow:0 6px 20px rgba(31,78,121,.4);z-index:30}
+.bot{position:fixed;right:22px;bottom:88px;width:390px;max-width:calc(100vw - 32px);height:540px;max-height:calc(100vh - 110px);background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.18);z-index:30;display:none;flex-direction:column;overflow:hidden}
+.bot.on{display:flex}
+.bot-h{background:var(--brand);color:#fff;padding:12px 14px}.bot-h small{opacity:.8;display:block}
+.bot-m{flex:1;overflow-y:auto;padding:12px;background:#f8fafc}
+.msg{max-width:88%;padding:8px 11px;border-radius:10px;margin-bottom:8px;line-height:1.45}
+.msg.u{margin-left:auto;background:var(--brand2);color:#fff;border-bottom-right-radius:3px}
+.msg.a{background:#fff;border:1px solid var(--line);border-bottom-left-radius:3px}
+.msg .res{border-top:1px solid var(--line);margin-top:6px;padding-top:6px;font-size:12px}
+.sugg{display:flex;gap:6px;flex-wrap:wrap;padding:8px 12px;border-top:1px solid var(--line)}
+.sugg button{border:1px solid var(--line);background:#fff;border-radius:14px;padding:4px 10px;font-size:12px;cursor:pointer;color:var(--brand)}
+.bot-i{display:flex;gap:6px;padding:10px;border-top:1px solid var(--line)}
+.login{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#14243b,#1f4e79);padding:16px}
+.login .box{background:#fff;border-radius:14px;padding:30px;width:440px;max-width:100%}
+.ms{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;border:1px solid #8c8c8c;background:#fff;color:#5e5e5e;padding:11px;border-radius:4px;font-weight:600;cursor:pointer}
+.ms:hover{background:#f6f6f6}
+.ms i{display:grid;grid-template-columns:9px 9px;gap:2px}.ms i b{width:9px;height:9px;display:block}
+.roles-pick{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.roles-pick button{border:1px solid var(--line);background:#fff;border-radius:6px;padding:7px;cursor:pointer;text-align:left;font-size:12px}
+.roles-pick button.on{border-color:var(--brand2);background:#eaf3fd}
+.ribbon{background:#fff8e6;border-bottom:1px solid #f5dfa6;color:#7a4d00;font-size:12px;padding:6px 22px}
+.up{margin-top:10px}
+.mob-menu{display:none}
+@media print{.side,.top,.ribbon,.bot-btn,.bot,.noprint{display:none!important}.content{padding:0}.card{border:0}}
+@media (max-width:980px){.g4{grid-template-columns:1fr 1fr}.g3,.g2,.g21{grid-template-columns:1fr}
+ .side{position:fixed;left:-260px;z-index:40;transition:.2s}.side.open{left:0}.mob-menu{display:inline-flex}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<div class="toast" id="toast"></div>
+<div class="drawer-bg" id="dbg" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer"></div>
+
+<script>
+/* ============================================================
+   Yapı365 — tıklanabilir ürün demosu
+   Gerçek sistem: Java 21 + Spring Boot 3 + Thymeleaf + PostgreSQL
+   Bu sayfa, arayüz akışlarını tarayıcıda göstermek için hazırlanmıştır.
+   ============================================================ */
+
+const TODAY = new Date(); TODAY.setHours(0,0,0,0);
+const addD = (n) => { const d = new Date(TODAY); d.setDate(d.getDate()+n); return d; };
+const fD = d => d ? d.toLocaleDateString('tr-TR') : '-';
+const fDT = d => d.toLocaleDateString('tr-TR') + ' ' + d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
+const fM = n => n == null ? '-' : n.toLocaleString('tr-TR',{maximumFractionDigits:2});
+const days = d => Math.round((d - TODAY)/86400000);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const $ = id => document.getElementById(id);
+function toast(t){ const el=$('toast'); el.textContent=t; el.classList.add('on'); clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('on'),2600); }
+
+/* ---------------- Roller ve yetkiler ---------------- */
+const MODULES = [
+ ['DASH','Gösterge Paneli','◧'],['DOKUMAN','Doküman Yönetimi','🗂'],['SOZLESME','Sözleşme Yönetimi','📑'],
+ ['HAKEDIS','İlerleme Bazlı Faturalama','📐'],['FATURA','Fatura ve Ödeme','🧾'],['CLAIM','Talep / Claim','⚖'],
+ ['IS_PROGRAMI','İş Programı','📅'],['PUANTAJ','Personel Puantajı','🕘'],['EKIPMAN','Makine / Ekipman','🚜'],
+ ['ISG','İş Sağlığı ve Güvenliği','⛑'],['IK','İnsan Kaynakları','👥'],['MAIL','Mail Otomasyonu','✉'],['YONETIM','Sistem Yönetimi','⚙']
+];
+const ALL = 'VEA';
+const ROLES = {
+ SISTEM_YONETICISI:{name:'Sistem Yöneticisi',user:'Can Öztürk',p:Object.fromEntries(MODULES.map(m=>[m[0],ALL]))},
+ PROJE_MUDURU:{name:'Proje Müdürü',user:'Mehmet Kaya',p:Object.fromEntries(MODULES.filter(m=>m[0]!=='YONETIM').map(m=>[m[0],ALL]))},
+ SANTIYE_SEFI:{name:'Şantiye Şefi',user:'Emre Şahin',p:{DASH:'V',DOKUMAN:'VE',SOZLESME:'V',HAKEDIS:'VE',IS_PROGRAMI:'VE',PUANTAJ:'VEA',EKIPMAN:'VE',ISG:'VE',CLAIM:'VE',MAIL:'V'}},
+ TEKNIK_OFIS:{name:'Teknik Ofis',user:'Ayşe Demir',p:{DASH:'V',DOKUMAN:'VE',SOZLESME:'VE',HAKEDIS:'VE',IS_PROGRAMI:'VE',CLAIM:'VE',MAIL:'V'}},
+ HAKEDIS_SORUMLUSU:{name:'Hakediş Sorumlusu',user:'Zeynep Arslan',p:{DASH:'V',DOKUMAN:'V',SOZLESME:'V',HAKEDIS:'VEA',FATURA:'V'}},
+ MUHASEBE:{name:'Muhasebe / Finans',user:'Burak Çelik',p:{DASH:'V',SOZLESME:'V',HAKEDIS:'VA',FATURA:'VEA',DOKUMAN:'V'}},
+ SATINALMA:{name:'Satınalma',user:'Selin Koç',p:{DASH:'V',SOZLESME:'VE',DOKUMAN:'VE',EKIPMAN:'VE',FATURA:'V',MAIL:'V'}},
+ ISG_UZMANI:{name:'İSG Uzmanı',user:'Okan Aydın',p:{DASH:'V',ISG:'VEA',PUANTAJ:'V',DOKUMAN:'VE'}},
+ IK_UZMANI:{name:'İK Uzmanı',user:'Elif Yıldız',p:{DASH:'V',IK:'VEA',PUANTAJ:'VE'}},
+ IZLEYICI:{name:'İzleyici (Yalnız Okuma)',user:'Deniz Aksoy',p:{DASH:'V',DOKUMAN:'V',SOZLESME:'V',HAKEDIS:'V',IS_PROGRAMI:'V'}}
+};
+const can = (m,a='V') => (ROLES[S.role].p[m]||'').includes(a);
+const me = () => ROLES[S.role].user;
+
+/* ---------------- Demo verisi ---------------- */
+const PROJECTS = [{id:1,code:'PRJ-2026-01',name:'Kartal Konut Projesi - A Blok'},{id:2,code:'PRJ-2026-02',name:'Gebze Lojistik Depo'}];
+
+const S = {
+ logged:false, role:'PROJE_MUDURU', project:1, route:'DASH', docFolder:null, ctTab:'ALL', hkSel:null, sideOpen:false,
+ audit:[],
+ folders:['Sözleşmeler/Müşteri','Sözleşmeler/Alt Yüklenici','Projeler/Mimari','Projeler/Statik','Hakedişler/2026','Faturalar/Gelen','İSG/Zimmet Formları'],
+ docs:[
+  {id:1,folder:'Sözleşmeler/Müşteri',title:'SZL-001 Ana Sözleşme',v:[{n:1,file:'SZL-001_ana_sozlesme.pdf',size:4.2,by:'Mehmet Kaya',at:addD(-240),sync:'ok'}]},
+  {id:2,folder:'Sözleşmeler/Alt Yüklenici',title:'SZL-014 Demir Kalıp Sözleşmesi',v:[{n:1,file:'SZL-014.pdf',size:2.1,by:'Selin Koç',at:addD(-180),sync:'ok'}]},
+  {id:3,folder:'Projeler/Statik',title:'A Blok Kalıp Planı',v:[{n:3,file:'A-blok-kalip-rev3.dwg',size:186,by:'Ayşe Demir',at:addD(-3),sync:'ok'},{n:2,file:'A-blok-kalip-rev2.dwg',size:181,by:'Ayşe Demir',at:addD(-40),sync:'ok'},{n:1,file:'A-blok-kalip-rev1.dwg',size:174,by:'Ayşe Demir',at:addD(-95),sync:'ok'}]},
+  {id:4,folder:'Projeler/Mimari',title:'Vaziyet Planı',v:[{n:2,file:'vaziyet-rev2.pdf',size:12.4,by:'Ayşe Demir',at:addD(-12),sync:'ok'},{n:1,file:'vaziyet-rev1.pdf',size:11.9,by:'Ayşe Demir',at:addD(-120),sync:'ok'}]},
+  {id:5,folder:'Hakedişler/2026',title:'Hakediş No 6',v:[{n:1,file:'hakedis-06.xlsx',size:0.8,by:'Zeynep Arslan',at:addD(-33),sync:'ok'}]},
+  {id:6,folder:'Faturalar/Gelen',title:'MRB2026000412',v:[{n:1,file:'MRB2026000412.pdf',size:0.3,by:'Mail Otomasyonu',at:addD(0),sync:'ok'}]},
+  {id:7,folder:'İSG/Zimmet Formları',title:'KKD Zimmet - Ekim',v:[{n:1,file:'kkd-zimmet-ekim.pdf',size:1.6,by:'Okan Aydın',at:addD(-6),sync:'ok'}]}
+ ],
+ contracts:[
+  {id:1,type:'MUSTERI',no:'SZL-001',party:'Kartal Yapı Kooperatifi',title:'A Blok anahtar teslim inşaat işleri',start:addD(-240),end:addD(300),amount:48500000,cur:'TRY',g:2425000,gEnd:addD(45),
+   clauses:[['Md. 7','Süre uzatımı','Mücbir sebep ve idareden kaynaklı gecikmelerde süre uzatımı verilir.'],['Md. 12','Fiyat farkı','TÜFE bazlı fiyat farkı aylık hakedişte uygulanır.'],['Md. 19','Gecikme cezası','Günlük sözleşme bedelinin %0,05\'i.']],
+   dates:[['Teminat mektubu bitişi',addD(45)],['Kaba inşaat bitişi (ara termin)',addD(70)],['Geçici kabul',addD(300)]]},
+  {id:2,type:'ALT_YUKLENICI',no:'SZL-014',party:'Demir Kalıp Ltd.',title:'Kaba inşaat kalıp ve demir işleri',start:addD(-180),end:addD(28),amount:6750000,cur:'TRY',g:337500,gEnd:addD(20),
+   clauses:[['Md. 5','İş programı','Alt yüklenici ana iş programına uymakla yükümlüdür.'],['Md. 9','Hakediş','Aylık metraj üzerinden, %5 teminat kesintisi ile.']],
+   dates:[['Teminat mektubu bitişi',addD(20)],['Sözleşme bitişi',addD(28)]]},
+  {id:3,type:'TEDARIK',no:'SZL-021',party:'Marmara Hazır Beton A.Ş.',title:'C30 hazır beton tedariki',start:addD(-150),end:addD(120),amount:3900000,cur:'TRY',g:null,gEnd:null,
+   clauses:[['Md. 4','Fiyat','m³ birim fiyat, 3 ayda bir revize.'],['Md. 6','Teslim','Sipariş sonrası 24 saat içinde santiyede.']],dates:[['Fiyat revizyonu',addD(16)]]},
+  {id:4,type:'DIS_HIZMET',no:'SZL-030',party:'Güven İSG Hizmetleri',title:'OSGB iş güvenliği uzmanı ve işyeri hekimi',start:addD(-90),end:addD(55),amount:420000,cur:'TRY',g:null,gEnd:null,
+   clauses:[['Md. 3','Kapsam','Haftalık 2 gün İSG uzmanı, ayda 1 gün işyeri hekimi.']],dates:[['Sözleşme yenileme',addD(55)]]},
+  {id:5,type:'ALT_YUKLENICI',no:'SZL-017',party:'Akın Elektrik Taah.',title:'Elektrik tesisatı',start:addD(-60),end:addD(210),amount:4150000,cur:'TRY',g:207500,gEnd:addD(215),clauses:[],dates:[]},
+  {id:6,type:'TEDARIK',no:'SZL-024',party:'Anadolu Demir Çelik',title:'B500C nervürlü inşaat demiri',start:addD(-120),end:addD(60),amount:8200000,cur:'TRY',g:410000,gEnd:addD(75),clauses:[],dates:[]}
+ ],
+ hakedis:[
+  {id:7,no:7,period:'Ekim 2026',contract:'SZL-001',status:1,
+   items:[
+    {code:'15.150.1005',name:'C30 hazır beton dökülmesi',unit:'m³',price:3150,qty:2400,prev:1520,cur:310},
+    {code:'15.160.1003',name:'Nervürlü inşaat demiri işçiliği',unit:'ton',price:28500,qty:360,prev:228,cur:44},
+    {code:'15.180.1003',name:'Plywood ile düz yüzeyli kalıp',unit:'m²',price:620,qty:15800,prev:9900,cur:2100},
+    {code:'18.461.1011',name:'Bims blok duvar (19 cm)',unit:'m²',price:540,qty:9200,prev:1200,cur:1450},
+    {code:'Ö-04',name:'Su yalıtımı (bitümlü membran)',unit:'m²',price:410,qty:3100,prev:3100,cur:0}],
+   flow:[{role:'TEKNIK_OFIS',t:'Hazırlayan',who:'Ayşe Demir',at:addD(-2)},{role:'HAKEDIS_SORUMLUSU',t:'Kontrol'},{role:'PROJE_MUDURU',t:'Proje Müdürü Onayı'},{role:'MUHASEBE',t:'Finans Onayı'}]},
+  {id:6,no:6,period:'Eylül 2026',contract:'SZL-001',status:4,items:[],flow:[{role:'TEKNIK_OFIS',t:'Hazırlayan',who:'Ayşe Demir',at:addD(-34)},{role:'HAKEDIS_SORUMLUSU',t:'Kontrol',who:'Zeynep Arslan',at:addD(-33)},{role:'PROJE_MUDURU',t:'Proje Müdürü Onayı',who:'Mehmet Kaya',at:addD(-32)},{role:'MUHASEBE',t:'Finans Onayı',who:'Burak Çelik',at:addD(-30)}],total:6185000}
+ ],
+ invoices:[
+  {no:'KYK2026-0007',party:'Kartal Yapı Kooperatifi',dir:'Kesilen',amount:6185000,paid:4000000,due:addD(-6),status:'Kısmi ödendi',payments:[[addD(-20),2500000],[addD(-9),1500000]]},
+  {no:'MRB2026000412',party:'Marmara Hazır Beton A.Ş.',dir:'Gelen',amount:976500,paid:0,due:addD(25),status:'Onay bekliyor',payments:[]},
+  {no:'DKL2026-031',party:'Demir Kalıp Ltd.',dir:'Gelen',amount:1254000,paid:1254000,due:addD(-15),status:'Ödendi',payments:[[addD(-16),1254000]]},
+  {no:'ADC-88412',party:'Anadolu Demir Çelik',dir:'Gelen',amount:2310000,paid:0,due:addD(-3),status:'Vadesi geçti',payments:[]},
+  {no:'GIS-2026-10',party:'Güven İSG Hizmetleri',dir:'Gelen',amount:35000,paid:0,due:addD(9),status:'Onaylandı',payments:[]}
+ ],
+ claims:[
+  {no:'CLM-003',title:'Proje revizyonu kaynaklı süre uzatımı (statik rev3)',contract:'SZL-001',clause:'Md. 7',amount:null,days:35,status:'İncelemede',at:addD(-10),files:3},
+  {no:'CLM-002',title:'Fiyat farkı hesap itirazı (Ağustos)',contract:'SZL-001',clause:'Md. 12',amount:412000,days:null,status:'Müzakere',at:addD(-48),files:5},
+  {no:'CLM-001',title:'Alt yüklenici gecikme cezası',contract:'SZL-014',clause:'Md. 5',amount:96000,days:null,status:'Kapandı',at:addD(-110),files:2}
+ ],
+ tasks:[
+  {n:'Hafriyat ve iksa',s:-210,e:-150,p:100,c:true},{n:'Temel betonu',s:-150,e:-118,p:100,c:true},
+  {n:'Bodrum kat perdeler',s:-118,e:-80,p:100,c:true},{n:'Zemin + 1-4. kat kaba',s:-80,e:-10,p:100,c:true},
+  {n:'5-8. kat kaba inşaat',s:-10,e:55,p:22,c:true,late:6},{n:'Çatı ve yalıtım',s:55,e:85,p:0,c:true},
+  {n:'Duvar örme (1-4. kat)',s:-20,e:30,p:48,c:false},{n:'Elektrik kaba tesisat',s:0,e:70,p:8,c:false},
+  {n:'Mekanik kaba tesisat',s:5,e:75,p:0,c:false},{n:'Dış cephe iskele',s:40,e:60,p:0,c:false},
+  {n:'Kaba inşaat bitişi',s:70,e:70,p:0,c:true,ms:true},{n:'İnce işler',s:85,e:240,p:0,c:true}
+ ],
+ crews:[
+  {team:'Kalıp Ekibi (Demir Kalıp)',people:['Ali Er','Hüseyin Tan','Murat Gül','Serkan Bal']},
+  {team:'Demir Ekibi',people:['Recep Koç','Ramazan Ay','Yusuf Kurt']},
+  {team:'Duvar Ekibi',people:['İsmail Şen','Cem Taş','Hakan Uz']}
+ ],
+ puantaj:{}, puantajApproved:false,
+ equipment:[
+  {code:'EKP-01',name:'Kule vinç Liebherr 172 EC-B',hours:1840,lastMaint:addD(-25),nextMaint:addD(5),doc:'Periyodik kontrol',docEnd:addD(12),status:'Çalışıyor'},
+  {code:'EKP-02',name:'Beton pompası 42m',hours:620,lastMaint:addD(-10),nextMaint:addD(50),doc:'Trafik sigortası',docEnd:addD(140),status:'Çalışıyor'},
+  {code:'EKP-03',name:'JCB 3CX kazıcı yükleyici',hours:2310,lastMaint:addD(-60),nextMaint:addD(-4),doc:'Operatör belgesi',docEnd:addD(-2),status:'Arızalı'},
+  {code:'EKP-04',name:'Jeneratör 250 kVA',hours:980,lastMaint:addD(-15),nextMaint:addD(45),doc:'Periyodik kontrol',docEnd:addD(200),status:'Yedekte'},
+  {code:'EKP-05',name:'Dalgıç pompa (2 adet)',hours:430,lastMaint:addD(-5),nextMaint:addD(85),doc:'-',docEnd:null,status:'Çalışıyor'}
+ ],
+ faults:[{eq:'EKP-03',at:addD(-4),t:'Hidrolik kaçak - servis çağrıldı',by:'Emre Şahin'}],
+ health:[
+  {p:'Ali Er',test:'Akciğer grafisi + odyometri',end:addD(-8)},{p:'Recep Koç',test:'Periyodik muayene',end:addD(14)},
+  {p:'Cem Taş',test:'Yüksekte çalışma raporu',end:addD(26)},{p:'Murat Gül',test:'Periyodik muayene',end:addD(160)}
+ ],
+ ppe:[
+  {p:'Ali Er',items:'Baret, emniyet kemeri, iş ayakkabısı',at:addD(-6),signed:true},
+  {p:'Hüseyin Tan',items:'Baret, eldiven, gözlük',at:addD(-6),signed:true},
+  {p:'Yusuf Kurt',items:'Baret, emniyet kemeri',at:addD(-1),signed:false}
+ ],
+ leaves:[
+  {id:1,p:'Murat Gül',type:'Yıllık izin',from:addD(2),to:addD(4),dayCount:3,status:'Onay bekliyor',balance:11},
+  {id:2,p:'Cem Taş',type:'Mazeret izni',from:addD(-3),to:addD(-3),dayCount:1,status:'Onaylandı',balance:7},
+  {id:3,p:'Ramazan Ay',type:'Yıllık izin',from:addD(10),to:addD(16),dayCount:7,status:'Onay bekliyor',balance:14}
+ ],
+ rules:[
+  {id:1,prio:10,name:'Hakediş mailleri',sender:'',subject:'hakediş',kw:'',action:'İlgili modülde kayıt aç',target:'İlerleme Bazlı Faturalama',active:true},
+  {id:2,prio:20,name:'Fatura ekleri',sender:'',subject:'',kw:'fatura, e-fatura, irsaliye',action:'Eki ilgili klasöre kaydet',target:'Faturalar/Gelen',active:true},
+  {id:3,prio:30,name:'Satınalma talepleri',sender:'',subject:'satın alma',kw:'teklif, sipariş',action:'İlgili kişiye bildir',target:'Selin Koç',active:true},
+  {id:4,prio:40,name:'İSG bildirimleri',sender:'osgb',subject:'',kw:'kaza, ramak kala, eğitim',action:'Görev oluştur',target:'Okan Aydın',active:true}
+ ],
+ mails:[
+  {at:new Date(Date.now()-35*60000),from:'muhasebe@demirkalip.com.tr',subject:'Ekim ayı hakediş no 7 onaya sunulmuştur',rule:'Hakediş mailleri',by:'Kural',res:'İlerleme Bazlı Faturalama → taslak kayıt açıldı'},
+  {at:new Date(Date.now()-2*3600000),from:'efatura@marmarabeton.com.tr',subject:'MRB2026000412 numaralı e-fatura',rule:'Fatura ekleri',by:'Kural',res:'Ek → Faturalar/Gelen klasörüne kaydedildi'},
+  {at:new Date(Date.now()-5*3600000),from:'satis@anadoludemir.com.tr',subject:'B500C demir fiyat teklifimiz',rule:'Satınalma talepleri',by:'Kural',res:'Selin Koç bilgilendirildi'},
+  {at:new Date(Date.now()-26*3600000),from:'proje@kartalkoop.org',subject:'Statik revizyon hakkında görüşme talebi',rule:'-',by:'Yapay zekâ',res:'Öneri: Talep / Claim (%87) → onay bekliyor'},
+  {at:addD(-33),from:'satinalma@akinelektrik.com',subject:'Satın alma talebi: kablo tavası',rule:'Satınalma talepleri',by:'Kural',res:'Selin Koç bilgilendirildi'}
+ ]
+};
+
+// puantaj başlangıç verisi
+(function(){
+  S.crews.forEach(c=>c.people.forEach(p=>{ S.puantaj[p]=[]; for(let i=0;i<7;i++){ const d=addD(i-6).getDay(); S.puantaj[p].push(d===0?0:(d===6?5:9)); } }));
+  S.puantaj['Cem Taş'][3]='İ';
+  const now=Date.now();
+  const seed=[[-50,'Mehmet Kaya','Sözleşme','SZL-001','Teminat bitiş tarihi güncellendi'],[-41,'Ayşe Demir','Doküman','A Blok Kalıp Planı','v3 yüklendi → SharePoint\'e aktarıldı'],
+   [-30,'Ayşe Demir','Hakediş','Hakediş No 7','Oluşturuldu ve kontrole gönderildi'],[-12,'Mail Otomasyonu','Doküman','MRB2026000412','Mail ekinden otomatik kaydedildi'],[-4,'Emre Şahin','Ekipman','EKP-03','Arıza kaydı açıldı']];
+  seed.forEach(s=>S.audit.push({at:new Date(now+s[0]*3600000),user:s[1],entity:s[2],rec:s[3],act:s[4]}));
+})();
+function log(entity, rec, act){ S.audit.unshift({at:new Date(),user:me(),entity,rec,act}); }
+
+/* ---------------- Çatı ---------------- */
+function render(){
+  const r=$('root');
+  if(!S.logged){ r.innerHTML=loginView(); return; }
+  if(!can(S.route)) S.route='DASH';
+  const pending = pendingCount();
+  r.innerHTML = `
+  <div class="ribbon">Demo ortamı · Sağ üstten rol değiştirerek menülerin, butonların ve onay yetkilerinin nasıl değiştiğini görebilirsiniz.</div>
+  <div class="app">
+    <aside class="side ${S.sideOpen?'open':''}">
+      <div class="logo">Yapı<span>365</span></div>
+      ${MODULES.filter(m=>m[0]!=='YONETIM').map((m,i)=> (i===1?'<div class="grp">Modüller</div>':'') + (m[0]==='MAIL'&&can('MAIL')?'<div class="grp">Otomasyon</div>':'') + (can(m[0])?`<div class="nav ${S.route===m[0]?'on':''}" onclick="go('${m[0]}')"><span>${m[2]}</span>${m[1]}${pending[m[0]]?`<span class="ct">${pending[m[0]]}</span>`:''}</div>`:'')).join('')}
+      ${can('YONETIM')?`<div class="grp">Yönetim</div>
+        <div class="nav ${S.route==='ROLES'?'on':''}" onclick="go('ROLES')"><span>🔐</span>Roller ve Yetkiler</div>
+        <div class="nav ${S.route==='AUDIT'?'on':''}" onclick="go('AUDIT')"><span>🕓</span>İşlem Geçmişi</div>`:''}
+    </aside>
+    <div class="main">
+      <div class="top">
+        <button class="btn s sm mob-menu" onclick="S.sideOpen=!S.sideOpen;render()">☰</button>
+        <select onchange="S.project=+this.value;toast('Proje değişti: '+this.options[this.selectedIndex].text);render()">${PROJECTS.map(p=>`<option value="${p.id}" ${p.id===S.project?'selected':''}>${p.code} · ${p.name}</option>`).join('')}</select>
+        <div class="sp"></div>
+        <select title="Demo: rol değiştir" onchange="S.role=this.value;toast('Rol: '+ROLES[S.role].name);render()" style="max-width:220px">${Object.entries(ROLES).map(([k,v])=>`<option value="${k}" ${k===S.role?'selected':''}>${v.name}</option>`).join('')}</select>
+        <div class="who"><div class="av">${me().split(' ').map(x=>x[0]).join('')}</div><div><b>${me()}</b><div class="small muted">${ROLES[S.role].name}</div></div></div>
+        <button class="btn s sm" onclick="S.logged=false;render()">Çıkış</button>
+      </div>
+      <div class="content" id="content">${view()}</div>
+    </div>
+  </div>
+  <button class="bot-btn" onclick="toggleBot()" title="Asistan">💬</button>
+  <div class="bot ${BOT.open?'on':''}" id="bot">${botView()}</div>`;
+  const bm=$('botm'); if(bm) bm.scrollTop=bm.scrollHeight;
+}
+function go(r){ S.route=r; S.sideOpen=false; render(); window.scrollTo(0,0); }
+function view(){
+  return ({DASH:dash,DOKUMAN:docs,SOZLESME:contracts,HAKEDIS:hakedis,FATURA:invoices,CLAIM:claims,IS_PROGRAMI:schedule,
+    PUANTAJ:puantaj,EKIPMAN:equipment,ISG:isg,IK:hr,MAIL:mail,ROLES:roles,AUDIT:audit}[S.route]||dash)();
+}
+function pendingCount(){
+  const c={};
+  const hk=S.hakedis.filter(h=>h.status<4 && h.flow[h.status] && (h.flow[h.status].role===S.role||S.role==='SISTEM_YONETICISI')).length;
+  if(hk) c.HAKEDIS=hk;
+  if(can('FATURA','A')){ const f=S.invoices.filter(i=>i.status==='Onay bekliyor').length; if(f) c.FATURA=f; }
+  if(can('IK','A')){ const l=S.leaves.filter(i=>i.status==='Onay bekliyor').length; if(l) c.IK=l; }
+  if(can('PUANTAJ','A') && !S.puantajApproved) c.PUANTAJ=1;
+  return c;
+}
+function denied(a){ return `disabled title="Rolünüzün bu işlem için '${a}' yetkisi yok"`; }
+function openDrawer(html){ $('drawer').innerHTML='<button class="x" onclick="closeDrawer()">×</button>'+html; $('drawer').classList.add('on'); $('dbg').classList.add('on'); }
+function closeDrawer(){ $('drawer').classList.remove('on'); $('dbg').classList.remove('on'); }
+
+/* ---------------- Giriş ---------------- */
+function loginView(){
+  return `<div class="login"><div class="box">
+    <h1>Yapı<span style="color:#2e75b6">365</span></h1>
+    <p class="sub">Proje Yönetim Sistemi</p>
+    <button class="ms" onclick="S.logged=true;log('Oturum','${'Microsoft 365'}','SSO ile giriş yapıldı');render()">
+      <i><b style="background:#f25022"></b><b style="background:#7fba00"></b><b style="background:#00a4ef"></b><b style="background:#ffb900"></b></i>
+      Microsoft 365 hesabı ile giriş yap</button>
+    <p class="small muted" style="margin-top:14px">Kullanıcılar şirket Microsoft 365 hesaplarıyla tek tıkla giriş yapar; ayrı şifre yoktur. Yetkiler, sistemdeki rol matrisinden gelir.</p>
+    <label>Demo için bir rol seçin</label>
+    <div class="roles-pick">${Object.entries(ROLES).map(([k,v])=>`<button class="${k===S.role?'on':''}" onclick="S.role='${k}';render()"><b>${v.name}</b><br><span class="muted">${v.user}</span></button>`).join('')}</div>
+  </div></div>`;
+}
+
+/* ---------------- Gösterge paneli ---------------- */
+function dash(){
+  const p=PROJECTS.find(x=>x.id===S.project);
+  const crit=[];
+  if(can('SOZLESME')) S.contracts.forEach(c=>c.dates.forEach(d=>{ const k=days(d[1]); if(k>=-10&&k<=60) crit.push({c,label:d[0],date:d[1],k}); }));
+  if(can('EKIPMAN')) S.equipment.forEach(e=>{ if(e.docEnd&&days(e.docEnd)<=30) crit.push({c:{no:e.code,party:e.name},label:e.doc,date:e.docEnd,k:days(e.docEnd)}); });
+  if(can('ISG')) S.health.forEach(h=>{ if(days(h.end)<=30) crit.push({c:{no:'İSG',party:h.p},label:h.test,date:h.end,k:days(h.end)}); });
+  crit.sort((a,b)=>a.k-b.k);
+  const hk=S.hakedis[0]; const hkTotal=hk.items.reduce((s,i)=>s+i.cur*i.price,0);
+  const overdue=S.invoices.filter(i=>i.paid<i.amount && days(i.due)<0);
+  const prog=Math.round(S.tasks.reduce((s,t)=>s+t.p*(t.e-t.s||1),0)/S.tasks.reduce((s,t)=>s+(t.e-t.s||1),0));
+  const approvals=[];
+  if(can('HAKEDIS')) S.hakedis.forEach(h=>{ if(h.status<4){ const st=h.flow[h.status]; approvals.push({t:`Hakediş No ${h.no} · ${st.t}`,who:ROLES[st.role].name,mine:st.role===S.role||S.role==='SISTEM_YONETICISI',go:'HAKEDIS'}); }});
+  if(can('FATURA')) S.invoices.filter(i=>i.status==='Onay bekliyor').forEach(i=>approvals.push({t:`Fatura ${i.no} onayı`,who:'Muhasebe / Finans',mine:can('FATURA','A'),go:'FATURA'}));
+  if(can('IK')) S.leaves.filter(l=>l.status==='Onay bekliyor').forEach(l=>approvals.push({t:`${l.p} · ${l.type} (${l.dayCount} gün)`,who:'İK Uzmanı',mine:can('IK','A'),go:'IK'}));
+  if(can('PUANTAJ')&&!S.puantajApproved) approvals.push({t:'Haftalık puantaj onayı',who:'Şantiye Şefi',mine:can('PUANTAJ','A'),go:'PUANTAJ'});
+  return `
+  <h1>${p.name}</h1><p class="sub">${p.code} · ${fD(TODAY)} · Hoş geldiniz, ${me().split(' ')[0]}</p>
+  <div class="grid g4">
+    <div class="card kpi"><div class="v">%${prog}</div><div class="l">Fiziksel ilerleme</div><div class="bar up"><i style="width:${prog}%"></i></div></div>
+    ${can('HAKEDIS')?`<div class="card kpi"><div class="v">${fM(hkTotal/1e6)} M₺</div><div class="l">Bu dönem hakediş (No ${hk.no})</div></div>`:`<div class="card kpi"><div class="v">${S.docs.length}</div><div class="l">Doküman</div></div>`}
+    ${can('FATURA')?`<div class="card kpi"><div class="v" style="color:${overdue.length?'var(--bad)':'inherit'}">${overdue.length}</div><div class="l">Vadesi geçmiş fatura</div></div>`:`<div class="card kpi"><div class="v">${S.contracts.length}</div><div class="l">Aktif sözleşme</div></div>`}
+    <div class="card kpi"><div class="v">${crit.filter(x=>x.k<=30).length}</div><div class="l">30 gün içinde kritik tarih</div></div>
+  </div>
+  <div class="grid g21">
+    <div class="card"><h2>Kritik tarihler ve uyarılar</h2><div class="tw"><table>
+      <tr><th>Kayıt</th><th>Olay</th><th>Tarih</th><th>Kalan</th></tr>
+      ${crit.slice(0,8).map(x=>`<tr><td><b>${esc(x.c.no)}</b> <span class="muted">${esc(x.c.party)}</span></td><td>${esc(x.label)}</td><td>${fD(x.date)}</td><td><span class="b ${x.k<0?'bad':x.k<=30?'warn':'grey'}">${x.k<0?Math.abs(x.k)+' gün geçti':x.k+' gün'}</span></td></tr>`).join('')}
+    </table></div></div>
+    <div class="card"><h2>Onay bekleyenler</h2>
+      ${approvals.map(a=>`<div style="padding:8px 0;border-bottom:1px solid var(--line)"><a onclick="go('${a.go}')"><b>${esc(a.t)}</b></a><div class="small muted">${esc(a.who)} ${a.mine?'· <span class="b ok">Sizde</span>':''}</div></div>`).join('')||'<p class="muted">Bekleyen onay yok</p>'}
+    </div>
+  </div>
+  <div class="grid g2">
+    <div class="card" style="${can('IS_PROGRAMI')?'':'display:none'}"><h2>İş programı · kritik yol</h2>${S.tasks.filter(t=>t.c&&!t.ms&&t.p<100).slice(0,3).map(t=>`<div style="margin-bottom:10px"><div class="between"><span>${t.n}</span><span class="small ${t.late?'':'muted'}" style="${t.late?'color:var(--bad)':''}">%${t.p}${t.late?' · '+t.late+' gün gecikme':''}</span></div><div class="bar"><i style="width:${t.p}%;background:${t.late?'#e5484d':'var(--brand2)'}"></i></div></div>`).join('')}<a onclick="go('IS_PROGRAMI')">Gantt'ı aç →</a></div>
+    <div class="card"><h2>Son işlemler</h2><table>${S.audit.slice(0,6).map(a=>`<tr><td class="small muted" style="white-space:nowrap">${fDT(a.at)}</td><td><b>${esc(a.user)}</b> · ${esc(a.entity)}: ${esc(a.rec)}<div class="small muted">${esc(a.act)}</div></td></tr>`).join('')}</table></div>
+  </div>`;
+}
+
+/* ---------------- Doküman ---------------- */
+function docs(){
+  const f=S.docFolder; const list=S.docs.filter(d=>!f||d.folder===f||d.folder.startsWith(f+'/'));
+  const roots=[...new Set(S.folders.map(x=>x.split('/')[0]))];
+  return `<div class="between"><div><h1>Doküman Yönetimi</h1><p class="sub">Klasör yapısı ve versiyonlama · her yükleme otomatik olarak SharePoint / OneDrive'a aktarılır</p></div>
+    <div class="row"><button class="btn" ${can('DOKUMAN','E')?'':denied('Düzenle')} onclick="uploadDialog()">⬆ Dosya yükle</button></div></div>
+  <div class="grid" style="grid-template-columns:240px 1fr">
+    <div class="card tree"><div class="${!f?'on':''}" onclick="S.docFolder=null;render()">📁 Tüm dokümanlar</div>
+      ${roots.map(r=>`<div class="${f===r?'on':''}" onclick="S.docFolder='${r}';render()">📁 ${r}</div>`+S.folders.filter(x=>x.startsWith(r+'/')).map(x=>`<div style="padding-left:26px" class="${f===x?'on':''}" onclick="S.docFolder='${x}';render()">└ ${x.split('/')[1]}</div>`).join('')).join('')}
+    </div>
+    <div class="card tw"><table><tr><th>Başlık</th><th>Klasör</th><th>Versiyon</th><th>Son yükleyen</th><th>Tarih</th><th>SharePoint</th></tr>
+      ${list.map(d=>{const v=d.v[0];return `<tr class="click" onclick="docDetail(${d.id})"><td><b>${esc(d.title)}</b><div class="small muted">${esc(v.file)} · ${fM(v.size)} MB</div></td><td class="small">${esc(d.folder)}</td><td><span class="b">v${v.n}</span></td><td>${esc(v.by)}</td><td>${fD(v.at)}</td><td>${syncBadge(v.sync)}</td></tr>`}).join('')||'<tr><td colspan="6" class="muted">Bu klasörde doküman yok</td></tr>'}
+    </table></div>
+  </div>`;
+}
+function syncBadge(s){ return s==='ok'?'<span class="b ok">✓ Aktarıldı</span>':s==='run'?'<span class="b warn">⟳ Aktarılıyor</span>':'<span class="b grey">Kuyrukta</span>'; }
+function docDetail(id){
+  const d=S.docs.find(x=>x.id===id);
+  openDrawer(`<h1>${esc(d.title)}</h1><p class="sub">${esc(d.folder)}</p>
+   <p class="small muted">SharePoint yolu: <code>/ProjeYonetim/${PROJECTS[S.project-1].code}/${esc(d.folder)}/${esc(d.title)}/</code></p>
+   <table><tr><th>Versiyon</th><th>Dosya</th><th>Boyut</th><th>Yükleyen</th><th>Tarih</th><th></th></tr>
+   ${d.v.map(v=>`<tr><td><b>v${v.n}</b></td><td>${esc(v.file)}</td><td>${fM(v.size)} MB</td><td>${esc(v.by)}</td><td>${fD(v.at)}</td><td>${syncBadge(v.sync)}</td></tr>`).join('')}</table>
+   <p class="small muted" style="margin-top:12px">Eski versiyonlar silinmez; her versiyonun SHA-256 özeti tutulur, kim yüklediği işlem geçmişine yazılır.</p>
+   ${can('DOKUMAN','E')?`<button class="btn" onclick="closeDrawer();uploadDialog(${d.id})">Yeni versiyon yükle</button>`:''}`);
+}
+function uploadDialog(docId){
+  const d=docId?S.docs.find(x=>x.id===docId):null;
+  openDrawer(`<h1>${d?'Yeni versiyon':'Dosya yükle'}</h1><p class="sub">Aynı klasöre aynı başlıkla yüklenen dosya yeni versiyon olarak eklenir</p>
+   <label>Klasör</label><select id="uf">${S.folders.map(f=>`<option ${d&&d.folder===f||(!d&&S.docFolder===f)?'selected':''}>${f}</option>`).join('')}</select>
+   <label>Başlık</label><input id="ut" value="${d?esc(d.title):''}" placeholder="Örn. B Blok Mimari Proje">
+   <label>Dosya</label><input id="ufile" type="file">
+   <p class="small muted">Demo: dosya seçmezseniz 640 MB'lık örnek bir DWG yüklenir. Büyük dosyalar SharePoint'e 10 MB'lık parçalar halinde aktarılır.</p>
+   <button class="btn" onclick="doUpload()">Yükle</button><div id="uprog"></div>`);
+}
+function doUpload(){
+  const folder=$('uf').value, file=$('ufile').files[0];
+  const name=file?file.name:'B-blok-mimari-rev1.dwg', size=file?Math.max(file.size/1048576,0.01):640;
+  const title=$('ut').value.trim()||name.replace(/\.[^.]+$/,'');
+  let d=S.docs.find(x=>x.folder===folder&&x.title===title);
+  if(!d){ d={id:Date.now(),folder,title,v:[]}; S.docs.unshift(d); }
+  const v={n:(d.v[0]?.n||0)+1,file:name,size,by:me(),at:new Date(),sync:'run'}; d.v.unshift(v);
+  log('Doküman',title,`v${v.n} yüklendi (${fM(size)} MB)`);
+  const chunks=Math.max(1,Math.ceil(size/10)); let i=0;
+  $('uprog').innerHTML=`<div style="margin-top:14px"><div class="small">Sunucuya kaydedildi ✓ · SharePoint aktarımı: <span id="uc">0</span>/${chunks} parça</div><div class="bar up"><i id="ub" style="width:0"></i></div></div>`;
+  const t=setInterval(()=>{ i=Math.min(chunks,i+Math.ceil(chunks/12)); $('uc')&&($('uc').textContent=i); $('ub')&&($('ub').style.width=(i/chunks*100)+'%');
+    if(i>=chunks){ clearInterval(t); v.sync='ok'; log('Doküman',title,`v${v.n} SharePoint'e aktarıldı`); setTimeout(()=>{closeDrawer();S.docFolder=folder;render();toast(`${title} v${v.n} yüklendi ve SharePoint'e aktarıldı`);},500);} },180);
+}
+
+/* ---------------- Sözleşmeler ---------------- */
+const CT={MUSTERI:'Müşteri',ALT_YUKLENICI:'Alt Yüklenici',TEDARIK:'Tedarik',DIS_HIZMET:'Dış Hizmet'};
+function contracts(){
+  const list=S.contracts.filter(c=>S.ctTab==='ALL'||c.type===S.ctTab);
+  return `<div class="between"><div><h1>Sözleşme Yönetimi</h1><p class="sub">4 sözleşme tipi · maddeler, kritik tarihler ve teminat takibi</p></div>
+    <button class="btn" ${can('SOZLESME','E')?'':denied('Düzenle')} onclick="toast('Yeni sözleşme formu açılır')">+ Yeni sözleşme</button></div>
+  <div class="tabs">${[['ALL','Tümü'],...Object.entries(CT)].map(([k,v])=>`<div class="tab ${S.ctTab===k?'on':''}" onclick="S.ctTab='${k}';render()">${v} <span class="muted small">${k==='ALL'?S.contracts.length:S.contracts.filter(c=>c.type===k).length}</span></div>`).join('')}</div>
+  <div class="card tw"><table><tr><th>No</th><th>Tür</th><th>Karşı taraf / Konu</th><th class="num">Tutar</th><th>Bitiş</th><th>Teminat</th></tr>
+  ${list.map(c=>{const k=days(c.end),gk=c.gEnd?days(c.gEnd):null;return `<tr class="click" onclick="ctDetail(${c.id})"><td><b>${c.no}</b></td><td><span class="b">${CT[c.type]}</span></td><td>${esc(c.party)}<div class="small muted">${esc(c.title)}</div></td><td class="num">${fM(c.amount)} ₺</td><td>${fD(c.end)} ${k<=60?`<span class="b warn">${k} gün</span>`:''}</td><td>${c.g?fM(c.g)+' ₺':'-'} ${gk!=null&&gk<=60?`<div><span class="b ${gk<=30?'bad':'warn'}">Mektup ${gk} gün</span></div>`:''}</td></tr>`}).join('')}
+  </table></div>`;
+}
+function ctDetail(id){
+  const c=S.contracts.find(x=>x.id===id);
+  const hist=S.audit.filter(a=>a.rec===c.no);
+  openDrawer(`<span class="b">${CT[c.type]}</span><h1 style="margin-top:8px">${c.no} · ${esc(c.party)}</h1><p class="sub">${esc(c.title)}</p>
+   <div class="grid g2"><div><div class="small muted">Sözleşme bedeli</div><b>${fM(c.amount)} ₺</b></div><div><div class="small muted">Süre</div><b>${fD(c.start)} - ${fD(c.end)}</b></div>
+   <div><div class="small muted">Teminat</div><b>${c.g?fM(c.g)+' ₺':'-'}</b></div><div><div class="small muted">Teminat bitişi</div><b>${fD(c.gEnd)}</b></div></div>
+   <h2 style="margin-top:18px">Maddeler</h2>${c.clauses.length?`<table>${c.clauses.map(m=>`<tr><td style="white-space:nowrap"><b>${m[0]}</b></td><td><b>${m[1]}</b><div class="small muted">${m[2]}</div></td></tr>`).join('')}</table>`:'<p class="muted">Madde girilmemiş</p>'}
+   <h2 style="margin-top:18px">Kritik tarihler</h2>${c.dates.length?`<table>${c.dates.map(d=>`<tr><td>${d[0]}</td><td>${fD(d[1])}</td><td><span class="b ${days(d[1])<=30?'bad':'warn'}">${days(d[1])} gün</span></td></tr>`).join('')}</table><p class="small muted">Tarihten 60, 30 ve 7 gün önce ilgili kişilere e-posta ile hatırlatma gider.</p>`:'<p class="muted">-</p>'}
+   <h2 style="margin-top:18px">Değişiklik geçmişi</h2>${hist.length?hist.map(a=>`<div class="small" style="padding:4px 0"><b>${esc(a.user)}</b> · ${fDT(a.at)} · ${esc(a.act)}</div>`).join(''):'<p class="small muted">Kayıt yok</p>'}
+   ${can('SOZLESME','E')&&c.gEnd?`<p><button class="btn s" onclick="extendG(${c.id})">Teminat süresini 6 ay uzat</button></p>`:''}`);
+}
+function extendG(id){ const c=S.contracts.find(x=>x.id===id); const old=fD(c.gEnd); c.gEnd=new Date(c.gEnd); c.gEnd.setMonth(c.gEnd.getMonth()+6);
+  c.dates.forEach(d=>{ if(d[0].startsWith('Teminat')) d[1]=c.gEnd; }); log('Sözleşme',c.no,`Teminat bitişi: ${old} → ${fD(c.gEnd)}`); ctDetail(id); render(); toast('Güncellendi, işlem geçmişine yazıldı'); }
+
+/* ---------------- Hakediş ---------------- */
+function hakedis(){
+  const h=S.hakedis.find(x=>x.id===(S.hkSel||S.hakedis[0].id));
+  const rows=h.items.map(i=>({...i,cum:i.prev+i.cur}));
+  const tPrev=rows.reduce((s,i)=>s+i.prev*i.price,0), tCur=rows.reduce((s,i)=>s+i.cur*i.price,0);
+  const ret=tCur*0.05, kdv=(tCur-ret)*0.20;
+  const step=h.flow[h.status]; const myTurn=h.status<4&&(step.role===S.role||S.role==='SISTEM_YONETICISI')&&can('HAKEDIS','A');
+  const editable=h.status<=1&&can('HAKEDIS','E');
+  return `<div class="between"><div><h1>İlerleme Bazlı Faturalama</h1><p class="sub">Kalem ve miktar girişi · kümülatif hesap · çok aşamalı onay · PDF / Excel çıktı</p></div>
+    <div class="row noprint"><select style="width:auto" onchange="S.hkSel=+this.value;render()">${S.hakedis.map(x=>`<option value="${x.id}" ${x.id===h.id?'selected':''}>Hakediş No ${x.no} · ${x.period}</option>`).join('')}</select>
+    <button class="btn s" onclick="exportCsv(${h.id})">⬇ Excel</button><button class="btn s" onclick="window.print()">⬇ PDF</button></div></div>
+  <div class="card"><div class="between"><h2>Onay akışı</h2>${h.status>=4?'<span class="b ok">Onaylandı · faturaya hazır</span>':`<span class="b warn">Sırada: ${ROLES[step.role].name}</span>`}</div>
+   <div class="steps">${h.flow.map((f,i)=>`<div class="step ${i<h.status||h.status>=4?'done':i===h.status?'cur':''}"><div class="t">${i<h.status||h.status>=4?'✓ ':''}${f.t}</div><div class="d">${f.who?esc(f.who)+' · '+fD(f.at):ROLES[f.role].name}</div></div>`).join('')}</div>
+   ${h.status<4?`<div class="row noprint" style="margin-top:10px"><button class="btn g" ${myTurn?'':`disabled title="Bu adımı ${ROLES[step.role].name} onaylar"`} onclick="approveHk(${h.id})">✓ Onayla ve ilerlet</button>
+   <button class="btn r" ${myTurn&&h.status>0?'':'disabled'} onclick="rejectHk(${h.id})">↩ Düzeltmeye gönder</button>
+   ${myTurn?'':`<span class="small muted">Bu adım sizin rolünüzde değil. Rol değiştirerek akışı deneyebilirsiniz.</span>`}</div>`:''}
+  </div>
+  ${h.items.length?`<div class="card tw"><h2>Hakediş No ${h.no} · ${h.period} · ${h.contract}</h2><table>
+   <tr><th>Poz</th><th>İş kalemi</th><th>Birim</th><th class="num">Birim fiyat</th><th class="num">Sözleşme miktarı</th><th class="num">Önceki kümülatif</th><th class="num">Bu dönem</th><th class="num">Toplam kümülatif</th><th>%</th><th class="num">Bu dönem tutar</th></tr>
+   ${rows.map((i,ix)=>{const pc=Math.round(i.cum/i.qty*100);return `<tr><td class="small">${i.code}</td><td>${i.name}</td><td>${i.unit}</td><td class="num">${fM(i.price)}</td><td class="num">${fM(i.qty)}</td><td class="num">${fM(i.prev)}</td>
+   <td class="num">${editable?`<input type="number" value="${i.cur}" style="width:90px;text-align:right" onchange="setQty(${h.id},${ix},this.value)">`:fM(i.cur)}</td>
+   <td class="num"><b>${fM(i.cum)}</b></td><td style="min-width:70px"><div class="bar"><i style="width:${Math.min(pc,100)}%;background:${pc>100?'#e5484d':'var(--brand2)'}"></i></div><span class="small ${pc>100?'':'muted'}" style="${pc>100?'color:var(--bad)':''}">%${pc}${pc>100?' aşım!':''}</span></td><td class="num"><b>${fM(i.cur*i.price)}</b></td></tr>`}).join('')}
+   </table>
+   <div style="display:flex;justify-content:flex-end;margin-top:12px"><table style="width:auto;min-width:320px">
+    <tr><td>Önceki hakedişler toplamı</td><td class="num">${fM(tPrev)} ₺</td></tr>
+    <tr><td><b>Bu dönem imalat tutarı</b></td><td class="num"><b>${fM(tCur)} ₺</b></td></tr>
+    <tr><td>Teminat kesintisi (%5)</td><td class="num">-${fM(ret)} ₺</td></tr>
+    <tr><td>KDV (%20)</td><td class="num">${fM(kdv)} ₺</td></tr>
+    <tr><td><b>Ödenecek tutar</b></td><td class="num"><b>${fM(tCur-ret+kdv)} ₺</b></td></tr>
+    <tr><td class="muted">Kümülatif (önceki + bu dönem)</td><td class="num muted">${fM(tPrev+tCur)} ₺</td></tr></table></div>
+   ${editable?'<p class="small muted noprint">Miktarı değiştirdiğinizde kümülatif, yüzde ve tutarlar anında yeniden hesaplanır. Sözleşme miktarını aşan kalemler kırmızı uyarı verir.</p>':''}
+  </div>`:`<div class="card"><p>Bu hakediş onaylandı ve faturalandı. Toplam: <b>${fM(h.total)} ₺</b></p></div>`}`;
+}
+function setQty(id,ix,v){ const h=S.hakedis.find(x=>x.id===id); const it=h.items[ix]; const old=it.cur; it.cur=Math.max(0,+v||0); log('Hakediş','Hakediş No '+h.no,`${it.code} bu dönem miktarı: ${fM(old)} → ${fM(it.cur)}`); render(); }
+function approveHk(id){ const h=S.hakedis.find(x=>x.id===id); const st=h.flow[h.status]; st.who=me(); st.at=new Date(); log('Hakediş','Hakediş No '+h.no,`${st.t} verildi`); h.status++;
+  toast(h.status>=4?'Hakediş onaylandı, fatura taslağı oluşturuldu':`Onaylandı → sırada ${ROLES[h.flow[h.status].role].name} (e-posta bildirimi gönderildi)`); render(); }
+function rejectHk(id){ const h=S.hakedis.find(x=>x.id===id); log('Hakediş','Hakediş No '+h.no,'Düzeltmeye geri gönderildi'); for(let i=1;i<h.flow.length;i++){h.flow[i].who=null;h.flow[i].at=null;} h.status=1; h.flow[0].at=new Date(); toast('Hazırlayana geri gönderildi'); render(); }
+function exportCsv(id){
+  const h=S.hakedis.find(x=>x.id===id);
+  const lines=[['Poz','İş kalemi','Birim','Birim fiyat','Sözleşme miktarı','Önceki kümülatif','Bu dönem','Toplam kümülatif','Bu dönem tutar']];
+  h.items.forEach(i=>lines.push([i.code,i.name,i.unit,i.price,i.qty,i.prev,i.cur,i.prev+i.cur,i.cur*i.price]));
+  const csv='﻿'+lines.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(';')).join('\r\n');
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'})); a.download=`hakedis-${h.no}.csv`; a.click();
+  log('Hakediş','Hakediş No '+h.no,'Excel çıktısı alındı');
+}
+
+/* ---------------- Fatura ve ödeme ---------------- */
+function invoices(){
+  const out=S.invoices.filter(i=>i.paid<i.amount);
+  const late=out.filter(i=>days(i.due)<0);
+  return `<div class="between"><div><h1>Fatura ve Ödeme Takibi</h1><p class="sub">Fatura durumu · kısmi ödemeler · vade ve gecikme uyarıları</p></div>
+   <button class="btn" ${can('FATURA','E')?'':denied('Düzenle')} onclick="toast('Fatura giriş formu açılır')">+ Fatura</button></div>
+  ${late.length?`<div class="alert bad">⚠ <div><b>${late.length} faturanın vadesi geçti:</b> ${late.map(i=>`${i.no} (${Math.abs(days(i.due))} gün)`).join(', ')}</div></div>`:''}
+  <div class="grid g3">
+   <div class="card kpi"><div class="v">${fM(out.filter(i=>i.dir==='Gelen').reduce((s,i)=>s+i.amount-i.paid,0))} ₺</div><div class="l">Ödenecek (gelen faturalar)</div></div>
+   <div class="card kpi"><div class="v">${fM(out.filter(i=>i.dir==='Kesilen').reduce((s,i)=>s+i.amount-i.paid,0))} ₺</div><div class="l">Tahsil edilecek</div></div>
+   <div class="card kpi"><div class="v" style="color:var(--bad)">${fM(late.reduce((s,i)=>s+i.amount-i.paid,0))} ₺</div><div class="l">Vadesi geçmiş</div></div>
+  </div>
+  <div class="card tw"><table><tr><th>Fatura</th><th>Yön</th><th>Cari</th><th class="num">Tutar</th><th class="num">Ödenen</th><th>Ödeme</th><th>Vade</th><th>Durum</th><th></th></tr>
+  ${S.invoices.map((i,ix)=>{const k=days(i.due),pc=Math.round(i.paid/i.amount*100);return `<tr><td><b>${i.no}</b></td><td><span class="b grey">${i.dir}</span></td><td>${esc(i.party)}</td><td class="num">${fM(i.amount)}</td><td class="num">${fM(i.paid)}</td><td style="min-width:90px"><div class="bar"><i style="width:${pc}%;background:var(--ok)"></i></div><span class="small muted">%${pc}</span></td>
+   <td>${fD(i.due)}${i.paid<i.amount?`<div><span class="b ${k<0?'bad':k<=7?'warn':'grey'}">${k<0?Math.abs(k)+' gün gecikme':k+' gün'}</span></div>`:''}</td><td><span class="b ${i.status==='Ödendi'?'ok':i.status==='Vadesi geçti'?'bad':i.status==='Onay bekliyor'?'warn':''}">${i.status}</span></td>
+   <td style="white-space:nowrap">${i.status==='Onay bekliyor'?`<button class="btn g sm" ${can('FATURA','A')?'':denied('Onayla')} onclick="invApprove(${ix})">Onayla</button>`:''}
+   ${i.paid<i.amount&&i.status!=='Onay bekliyor'?`<button class="btn s sm" ${can('FATURA','E')?'':denied('Düzenle')} onclick="invPay(${ix})">Ödeme gir</button>`:''}</td></tr>`}).join('')}
+  </table></div>`;
+}
+function invApprove(ix){ const i=S.invoices[ix]; i.status='Onaylandı'; log('Fatura',i.no,'Ödeme onayı verildi'); toast('Fatura onaylandı'); render(); }
+function invPay(ix){ const i=S.invoices[ix]; const rest=i.amount-i.paid; const v=prompt(`${i.no} için ödeme tutarı (kalan ${fM(rest)} ₺):`, Math.round(rest/2)); if(!v) return;
+  const amt=Math.min(rest,+v||0); i.paid+=amt; i.payments.push([new Date(),amt]); i.status=i.paid>=i.amount?'Ödendi':'Kısmi ödendi'; log('Fatura',i.no,`${fM(amt)} ₺ ödeme girildi`); toast('Ödeme kaydedildi'); render(); }
+
+/* ---------------- Claim ---------------- */
+function claims(){
+  return `<div class="between"><div><h1>Talep / Hak İddiası (Claim)</h1><p class="sub">Olay kaydı · ilgili sözleşme maddesi · ekler · durum takibi</p></div>
+   <button class="btn" ${can('CLAIM','E')?'':denied('Düzenle')} onclick="toast('Yeni claim formu açılır')">+ Yeni talep</button></div>
+  <div class="card tw"><table><tr><th>No</th><th>Konu</th><th>Sözleşme / Madde</th><th>Talep</th><th>Ekler</th><th>Tarih</th><th>Durum</th></tr>
+  ${S.claims.map(c=>`<tr class="click" onclick="claimDetail('${c.no}')"><td><b>${c.no}</b></td><td>${esc(c.title)}</td><td>${c.contract} · <b>${c.clause}</b></td><td>${c.amount?fM(c.amount)+' ₺':''}${c.days?c.days+' gün süre':''}</td><td>📎 ${c.files}</td><td>${fD(c.at)}</td><td><span class="b ${c.status==='Kapandı'?'ok':c.status==='Müzakere'?'warn':''}">${c.status}</span></td></tr>`).join('')}
+  </table></div>`;
+}
+function claimDetail(no){
+  const c=S.claims.find(x=>x.no===no); const ct=S.contracts.find(x=>x.no===c.contract); const cl=ct?.clauses.find(m=>m[0]===c.clause);
+  const flow=['Olay kaydı','İnceleme','Bildirim gönderildi','Müzakere','Kapandı']; const cur=Math.max(0,flow.indexOf(c.status==='İncelemede'?'İnceleme':c.status));
+  openDrawer(`<h1>${c.no}</h1><p class="sub">${esc(c.title)}</p>
+   <div class="steps">${flow.map((f,i)=>`<div class="step ${i<cur?'done':i===cur?'cur':''}" style="min-width:90px"><div class="t" style="font-size:12px">${f}</div></div>`).join('')}</div>
+   <h2 style="margin-top:16px">Dayanak madde</h2><div class="card" style="background:#fafbfc"><b>${c.contract} · ${c.clause} ${cl?'· '+cl[1]:''}</b><div class="small muted">${cl?cl[2]:''}</div></div>
+   <h2>Olay kaydı</h2><table><tr><td class="small muted">${fD(c.at)}</td><td>Olay kaydı açıldı, fotoğraf ve tutanak eklendi</td></tr><tr><td class="small muted">${fD(addD(-6))}</td><td>Teknik ofis tarafından etki analizi yapıldı</td></tr></table>
+   <h2 style="margin-top:14px">Ekler</h2>${['tutanak.pdf','saha-foto-1.jpg','etki-analizi.xlsx','yazisma.pdf','revizyon-listesi.pdf'].slice(0,c.files).map(f=>`<div class="small">📎 ${f}</div>`).join('')}`);
+}
+
+/* ---------------- İş programı / Gantt ---------------- */
+function schedule(){
+  const min=-215,max=245,span=max-min, pos=d=>((d-min)/span*100);
+  const months=[]; for(let d=new Date(addD(min).getFullYear(),addD(min).getMonth()+1,1); d<=addD(max); d.setMonth(d.getMonth()+1)) months.push(new Date(d));
+  const late=S.tasks.filter(t=>t.late);
+  return `<div class="between"><div><h1>İş Programı</h1><p class="sub">Primavera P6 (.xer) ve MS Project (.xml / .mpp) içe aktarma · Gantt görünümü · kritik yol ve gecikme alarmları</p></div>
+   <div class="row"><button class="btn s" ${can('IS_PROGRAMI','E')?'':denied('Düzenle')} onclick="importPlan()">⬆ P6 / MS Project içe aktar</button></div></div>
+  ${late.map(t=>`<div class="alert bad">⏰ <div><b>Gecikme alarmı:</b> "${t.n}" kritik yolda, planın ${t.late} gün gerisinde. Kaba inşaat bitişi kilometre taşı risk altında. <span class="small">(Proje Müdürü ve Teknik Ofis'e e-posta gönderildi)</span></div></div>`).join('')}
+  <div class="card tw" style="padding:0"><div class="gantt">
+   <div class="g-head"><div class="g-name"><b>Aktivite</b></div><div class="g-months">${months.map(m=>`<span style="left:${pos(days(m))}%">${m.toLocaleDateString('tr-TR',{month:'short',year:'2-digit'})}</span>`).join('')}</div></div>
+   ${S.tasks.map(t=>`<div class="g-row"><div class="g-name">${t.c?'<span style="color:#e5484d">●</span> ':''}${t.n}${t.ms?' ◆':''}</div><div class="g-track"><div class="g-today" style="left:${pos(0)}%"></div>
+     <div class="g-bar ${t.c?'crit':''} ${t.ms?'ms':''}" title="${t.n}: ${fD(addD(t.s))} - ${fD(addD(t.e))} · %${t.p}" style="left:${pos(t.s)}%;width:${(t.e-t.s)/span*100}%">${t.ms?'':`<div class="p" style="width:${t.p}%"></div>`}</div></div></div>`).join('')}
+  </div></div>
+  <p class="small muted"><span style="color:#e5484d">●</span> Kritik yol &nbsp; <span style="color:#f79009">│</span> Bugün &nbsp; Koyu bölüm: gerçekleşme yüzdesi</p>`;
+}
+function importPlan(){
+  openDrawer(`<h1>İş programı içe aktar</h1><p class="sub">Primavera P6 (.xer) veya MS Project (.xml) dosyası</p>
+   <input type="file" accept=".xer,.xml,.mpp"><p class="small muted">Aktiviteler, bağımlılıklar (FS/SS/FF/SF), başlangıç-bitiş ve gerçekleşme yüzdeleri aktarılır. Yeni sürüm yüklendiğinde önceki baz plan saklanır ve sapma raporu çıkarılır.</p>
+   <button class="btn" onclick="this.disabled=true;this.textContent='Okunuyor…';setTimeout(()=>{closeDrawer();log('İş Programı','KRT-A-Rev4.xer','P6 programı içe aktarıldı (12 aktivite, 14 bağımlılık)');toast('12 aktivite ve 14 bağımlılık aktarıldı, kritik yol yeniden hesaplandı');render()},1200)">Demo dosyasıyla aktar</button>`);
+}
+
+/* ---------------- Puantaj ---------------- */
+function puantaj(){
+  const dd=[...Array(7)].map((_,i)=>addD(i-6));
+  const ed=can('PUANTAJ','E')&&!S.puantajApproved;
+  return `<div class="between"><div><h1>Personel Puantajı</h1><p class="sub">Ekip bazlı günlük giriş · yönetici onayı · aylık özet · Excel içe/dışa aktarma</p></div>
+   <div class="row"><button class="btn s" onclick="toast('Excel şablonu indirildi / içe aktarma açılır')">⇅ Excel</button>
+   ${S.puantajApproved?'<span class="b ok">✓ Hafta onaylandı</span>':`<button class="btn g" ${can('PUANTAJ','A')?'':denied('Onayla')} onclick="S.puantajApproved=true;log('Puantaj','Hafta '+fD(addD(-6)),'Haftalık puantaj onaylandı');toast('Puantaj onaylandı, bordroya aktarılmaya hazır');render()">✓ Haftayı onayla</button>`}</div></div>
+  <div class="card tw"><table class="pt"><tr><th>Personel</th>${dd.map(d=>`<th>${d.toLocaleDateString('tr-TR',{weekday:'short'})}<br>${d.getDate()}</th>`).join('')}<th>Toplam</th></tr>
+   ${S.crews.map(c=>`<tr><td colspan="9" style="background:#f2f6fb"><b>${c.team}</b></td></tr>`+c.people.map(p=>`<tr><td>${p}</td>${S.puantaj[p].map((v,i)=>`<td>${v==='İ'?'<span class="cell-i" title="İK modülünden onaylı izin">İzin</span>':ed?`<input value="${v}" onchange="S.puantaj['${p}'][${i}]=+this.value||0;render()">`:v}</td>`).join('')}<td><b>${S.puantaj[p].reduce((s,v)=>s+(+v||0),0)}</b></td></tr>`).join('')).join('')}
+  </table><p class="small muted">"İzin" hücreleri İK modülünde onaylanan izinlerden otomatik gelir ve elle değiştirilemez.</p></div>`;
+}
+
+/* ---------------- Ekipman ---------------- */
+function equipment(){
+  return `<div class="between"><div><h1>Makine / Ekipman Takibi</h1><p class="sub">Envanter · çalışma saatleri · bakım-arıza kaydı · belge süresi uyarıları</p></div>
+   <button class="btn" ${can('EKIPMAN','E')?'':denied('Düzenle')} onclick="toast('Ekipman formu açılır')">+ Ekipman</button></div>
+  <div class="card tw"><table><tr><th>Kod</th><th>Ekipman</th><th class="num">Çalışma saati</th><th>Sonraki bakım</th><th>Belge</th><th>Durum</th><th></th></tr>
+  ${S.equipment.map((e,ix)=>{const m=days(e.nextMaint),dk=e.docEnd?days(e.docEnd):null;return `<tr><td><b>${e.code}</b></td><td>${e.name}</td><td class="num">${fM(e.hours)}</td>
+   <td>${fD(e.nextMaint)} <span class="b ${m<0?'bad':m<=7?'warn':'grey'}">${m<0?Math.abs(m)+' gün geçti':m+' gün'}</span></td>
+   <td>${e.doc}${dk!=null?`<div><span class="b ${dk<0?'bad':dk<=30?'warn':'grey'}">${dk<0?'Süresi doldu':dk+' gün'}</span></div>`:''}</td>
+   <td><span class="b ${e.status==='Arızalı'?'bad':e.status==='Çalışıyor'?'ok':'grey'}">${e.status}</span></td>
+   <td><button class="btn s sm" ${can('EKIPMAN','E')?'':denied('Düzenle')} onclick="addHours(${ix})">+ Saat</button></td></tr>`}).join('')}</table></div>
+  <div class="card"><h2>Bakım / arıza kayıtları</h2><table>${S.faults.map(f=>`<tr><td>${fD(f.at)}</td><td><b>${f.eq}</b></td><td>${esc(f.t)}</td><td class="muted">${esc(f.by)}</td></tr>`).join('')}</table></div>`;
+}
+function addHours(ix){ const e=S.equipment[ix]; const v=prompt(`${e.code} için bugünkü çalışma saati:`,'9'); if(!v) return; e.hours+=+v||0; log('Ekipman',e.code,`${v} saat çalışma girildi`); render(); }
+
+/* ---------------- İSG ---------------- */
+function isg(){
+  return `<div class="between"><div><h1>İş Sağlığı ve Güvenliği</h1><p class="sub">Sağlık testi takibi · koruyucu ekipman teslim kaydı · zimmet formu PDF çıktısı</p></div></div>
+  <div class="grid g2">
+   <div class="card"><h2>Sağlık testleri</h2><table><tr><th>Personel</th><th>Test</th><th>Geçerlilik</th></tr>
+    ${S.health.map(h=>{const k=days(h.end);return `<tr><td>${h.p}</td><td>${h.test}</td><td>${fD(h.end)} <span class="b ${k<0?'bad':k<=30?'warn':'ok'}">${k<0?'Süresi doldu':k+' gün'}</span></td></tr>`}).join('')}</table>
+    <p class="small muted">Süresi dolan personel puantajda uyarı ile işaretlenir.</p></div>
+   <div class="card"><h2>KKD teslim / zimmet</h2><table><tr><th>Personel</th><th>Teslim edilen</th><th>Tarih</th><th></th></tr>
+    ${S.ppe.map((p,ix)=>`<tr><td>${p.p}</td><td class="small">${p.items}</td><td>${fD(p.at)}</td><td>${p.signed?'<span class="b ok">İmzalı</span>':'<span class="b warn">İmza bekliyor</span>'} <a onclick="zimmet(${ix})">PDF</a></td></tr>`).join('')}</table>
+    <p><button class="btn s" ${can('ISG','E')?'':denied('Düzenle')} onclick="toast('KKD teslim formu açılır')">+ KKD teslimi</button></p></div>
+  </div>`;
+}
+function zimmet(ix){ const p=S.ppe[ix]; const w=window.open('','_blank'); if(!w){toast('Açılır pencere engellendi');return;}
+  w.document.write(`<html><head><title>Zimmet Formu</title><style>body{font-family:Arial;padding:40px;max-width:720px}td,th{border:1px solid #999;padding:8px;text-align:left}table{border-collapse:collapse;width:100%}</style></head><body>
+  <h2>KİŞİSEL KORUYUCU DONANIM ZİMMET FORMU</h2><p>Proje: ${PROJECTS[S.project-1].name}<br>Tarih: ${fD(p.at)}</p>
+  <table><tr><th>Personel</th><td>${p.p}</td></tr><tr><th>Teslim edilen ekipman</th><td>${p.items}</td></tr></table>
+  <p>Yukarıda belirtilen kişisel koruyucu donanımları sağlam ve eksiksiz teslim aldım. Kullanımı konusunda eğitim aldım; kaybolması veya hasar görmesi halinde İSG birimine bildireceğimi kabul ederim.</p>
+  <br><table><tr><th>Teslim alan</th><th>Teslim eden (İSG Uzmanı)</th></tr><tr><td style="height:70px"></td><td></td></tr></table>
+  <script>window.print()<\/script></body></html>`); w.document.close(); log('İSG',p.p,'Zimmet formu PDF çıktısı alındı'); }
+
+/* ---------------- İK ---------------- */
+function hr(){
+  return `<div class="between"><div><h1>İnsan Kaynakları</h1><p class="sub">İzin talep ve onay akışı · izin bakiyesi · rapor kaydı (puantaja otomatik yansır)</p></div>
+   <button class="btn" ${can('IK','E')?'':denied('Düzenle')} onclick="toast('İzin talep formu açılır')">+ İzin talebi</button></div>
+  <div class="card tw"><table><tr><th>Personel</th><th>Tür</th><th>Tarih</th><th>Gün</th><th>Kalan bakiye</th><th>Durum</th><th></th></tr>
+  ${S.leaves.map(l=>`<tr><td>${l.p}</td><td>${l.type}</td><td>${fD(l.from)}${l.to-l.from?' - '+fD(l.to):''}</td><td>${l.dayCount}</td><td>${l.balance} gün</td><td><span class="b ${l.status==='Onaylandı'?'ok':l.status==='Reddedildi'?'bad':'warn'}">${l.status}</span></td>
+   <td style="white-space:nowrap">${l.status==='Onay bekliyor'?`<button class="btn g sm" ${can('IK','A')?'':denied('Onayla')} onclick="leave(${l.id},true)">Onayla</button> <button class="btn s sm" ${can('IK','A')?'':denied('Onayla')} onclick="leave(${l.id},false)">Reddet</button>`:''}</td></tr>`).join('')}
+  </table></div>`;
+}
+function leave(id,ok){ const l=S.leaves.find(x=>x.id===id); l.status=ok?'Onaylandı':'Reddedildi';
+  if(ok){ l.balance-=l.type==='Yıllık izin'?l.dayCount:0; const k=days(l.from); if(S.puantaj[l.p]) for(let i=0;i<7;i++){ const di=i-6; if(di>=k&&di<=days(l.to)) S.puantaj[l.p][i]='İ'; } }
+  log('İK',l.p,`${l.type} ${ok?'onaylandı':'reddedildi'}`); toast(ok?'İzin onaylandı · bakiye düşüldü · puantaja işlendi':'İzin reddedildi'); render(); }
+
+/* ---------------- Mail otomasyonu ---------------- */
+function norm(s){ return (s||'').toLocaleLowerCase('tr-TR'); }
+function matchRule(m){
+  return [...S.rules].filter(r=>r.active).sort((a,b)=>a.prio-b.prio).find(r=>{
+    if(!r.sender&&!r.subject&&!r.kw) return false;
+    if(r.sender&&!norm(m.from).includes(norm(r.sender))) return false;
+    if(r.subject&&!norm(m.subject).includes(norm(r.subject))) return false;
+    if(r.kw){ const t=norm(m.subject+' '+m.body); if(!r.kw.split(',').some(k=>k.trim()&&t.includes(norm(k.trim())))) return false; }
+    return true; });
+}
+function mail(){
+  return `<h1>Mail Otomasyonu</h1><p class="sub">Paylaşılan posta kutusu (proje@firma.com) Microsoft Graph ile okunur · önce kurallar, eşleşmezse yapay zekâ sınıflandırması · kurallar arayüzden yönetilir</p>
+  <div class="grid g2">
+   <div class="card"><h2>Kural testi</h2>
+    <label>Gönderen</label><input id="mf" value="satis@anadoludemir.com.tr"><label>Konu</label><input id="ms" value="Satın alma: Q12 demir için fiyat teklifi">
+    <label>İçerik</label><textarea id="mb" rows="2">Ekte teklifimizi bulabilirsiniz.</textarea>
+    <p><button class="btn" onclick="testMail()">Hangi kurala düşer?</button></p><div id="mres"></div></div>
+   <div class="card"><h2>Yeni kural</h2>
+    <div class="grid g2" style="gap:8px"><div><label>Ad</label><input id="rn" placeholder="Örn. Teminat mektupları"></div><div><label>Öncelik</label><input id="rp" type="number" value="50"></div>
+    <div><label>Gönderen içerir</label><input id="rs" placeholder="banka"></div><div><label>Konu içerir</label><input id="rsub" placeholder="teminat"></div></div>
+    <label>Anahtar kelimeler (virgülle)</label><input id="rk" placeholder="mektup, süre uzatım">
+    <label>Aksiyon</label><select id="ra"><option>İlgili modülde kayıt aç</option><option>Eki ilgili klasöre kaydet</option><option>İlgili kişiye bildir</option><option>Görev oluştur</option></select>
+    <p><button class="btn" ${can('MAIL','E')?'':denied('Düzenle')} onclick="addRule()">Kural ekle</button></p></div>
+  </div>
+  <div class="card tw"><h2>Kurallar</h2><table><tr><th>Öncelik</th><th>Ad</th><th>Koşullar</th><th>Aksiyon</th><th>Durum</th></tr>
+   ${[...S.rules].sort((a,b)=>a.prio-b.prio).map(r=>`<tr><td>${r.prio}</td><td><b>${esc(r.name)}</b></td><td class="small muted">${r.sender?'Gönderen ∋ '+esc(r.sender)+'<br>':''}${r.subject?'Konu ∋ '+esc(r.subject)+'<br>':''}${r.kw?'Kelime: '+esc(r.kw):''}</td><td>${esc(r.action)}<div class="small muted">${esc(r.target||'')}</div></td>
+   <td><button class="btn sm ${r.active?'':'s'}" ${can('MAIL','E')?'':denied('Düzenle')} onclick="toggleRule(${r.id})">${r.active?'Aktif':'Pasif'}</button></td></tr>`).join('')}</table></div>
+  <div class="card tw"><h2>İşlem kaydı</h2><table><tr><th>Alındı</th><th>Gönderen</th><th>Konu</th><th>Sınıflandıran</th><th>Sonuç</th></tr>
+   ${S.mails.map(m=>`<tr><td class="small" style="white-space:nowrap">${fDT(m.at)}</td><td class="small">${esc(m.from)}</td><td>${esc(m.subject)}</td><td><span class="b ${m.by==='Kural'?'':'warn'}">${m.by}</span></td><td class="small">${esc(m.res)}</td></tr>`).join('')}</table></div>`;
+}
+function testMail(){
+  const m={from:$('mf').value,subject:$('ms').value,body:$('mb').value}; const r=matchRule(m);
+  $('mres').innerHTML=r?`<div class="alert ok">✓ <div>Eşleşen kural: <b>${esc(r.name)}</b><br>Aksiyon: ${esc(r.action)} → ${esc(r.target||'')}</div></div>`
+   :`<div class="alert warn">🤖 <div>Hiçbir kural eşleşmedi → <b>yapay zekâ sınıflandırması</b> devreye girer. Model bir modül önerir (örn. "Sözleşme Yönetimi, %82"); öneri kullanıcı onayından sonra uygulanır.</div></div>`;
+}
+function addRule(){ const n=$('rn').value.trim(); if(!n){toast('Kural adı girin');return;}
+  S.rules.push({id:Date.now(),prio:+$('rp').value||50,name:n,sender:$('rs').value.trim(),subject:$('rsub').value.trim(),kw:$('rk').value.trim(),action:$('ra').value,target:'',active:true});
+  log('Mail Kuralı',n,'Kural oluşturuldu'); toast('Kural eklendi, bir sonraki okumada devreye girer'); render(); }
+function toggleRule(id){ const r=S.rules.find(x=>x.id===id); r.active=!r.active; log('Mail Kuralı',r.name,r.active?'Aktif edildi':'Pasif edildi'); render(); }
+
+/* ---------------- Roller ---------------- */
+function roles(){
+  const acts=[['V','G','Görüntüle'],['E','D','Düzenle'],['A','O','Onayla']];
+  return `<h1>Roller ve Yetkiler</h1><p class="sub">Her rol, modül bazında Görüntüle (G) / Düzenle (D) / Onayla (O) yetkisine sahiptir. Kutucuğa tıklayarak değiştirin; menü ve butonlar anında güncellenir.</p>
+  <div class="card tw"><table class="matrix"><tr><th>Modül</th>${Object.values(ROLES).map(r=>`<th style="font-size:11px;min-width:84px">${r.name}</th>`).join('')}</tr>
+  ${MODULES.map(m=>`<tr><td>${m[1]}</td>${Object.entries(ROLES).map(([k,r])=>`<td style="white-space:nowrap">${acts.map(a=>`<button class="dot ${(r.p[m[0]]||'').includes(a[0])?'on':''}" title="${m[1]} · ${a[2]}" ${can('YONETIM','E')?'':'disabled'} onclick="togglePerm('${k}','${m[0]}','${a[0]}')">${a[1]}</button>`).join('')}</td>`).join('')}</tr>`).join('')}
+  </table></div>
+  <div class="card"><h2>Kullanıcılar</h2><table><tr><th>Ad</th><th>Microsoft 365 hesabı</th><th>Rol</th><th>Projeler</th></tr>
+  ${Object.entries(ROLES).map(([k,r])=>`<tr><td>${r.user}</td><td class="muted">${norm(r.user).replace(/ç/g,'c').replace(/ğ/g,'g').replace(/ı/g,'i').replace(/ö/g,'o').replace(/ş/g,'s').replace(/ü/g,'u').replace(' ','.')}@firma.com.tr</td><td><span class="b">${r.name}</span></td><td><span class="b grey">PRJ-2026-01</span> ${['SISTEM_YONETICISI','PROJE_MUDURU','MUHASEBE'].includes(k)?'<span class="b grey">PRJ-2026-02</span>':''}</td></tr>`).join('')}</table></div>`;
+}
+function togglePerm(role,mod,a){ const r=ROLES[role]; let p=r.p[mod]||''; if(role==='SISTEM_YONETICISI'&&mod==='YONETIM'){toast('Sistem yöneticisinin yönetim yetkisi kaldırılamaz');return;}
+  p=p.includes(a)?p.replace(a,''):p+a; r.p[mod]=p; log('Yetki',r.name,`${mod}:${{V:'Görüntüle',E:'Düzenle',A:'Onayla'}[a]} ${p.includes(a)?'verildi':'kaldırıldı'}`); render(); }
+
+/* ---------------- İşlem geçmişi ---------------- */
+function audit(){
+  return `<h1>İşlem Geçmişi</h1><p class="sub">Tüm işlemler kim, ne zaman, ne değiştirdi bilgisiyle saklanır. Bu demoda yaptığınız her işlem buraya düşer.</p>
+  <div class="card tw"><table><tr><th>Zaman</th><th>Kullanıcı</th><th>Kayıt türü</th><th>Kayıt</th><th>İşlem</th></tr>
+  ${S.audit.map(a=>`<tr><td class="small" style="white-space:nowrap">${fDT(a.at)}</td><td><b>${esc(a.user)}</b></td><td><span class="b">${esc(a.entity)}</span></td><td>${esc(a.rec)}</td><td>${esc(a.act)}</td></tr>`).join('')}</table></div>`;
+}
+
+/* ---------------- Chatbot ---------------- */
+const BOT={open:false,msgs:[{a:true,t:'Merhaba! Mailler, dokümanlar ve sözleşmeler içinde doğal dille arama yapabilirim. Yetkiniz dahilinde kayıt ekleyip düzenleyebilirim; her değişiklik için önce onayınızı alırım.'}],pending:null};
+const SUGG=['Geçen ay Akın Elektrik\'ten gelen satın alma mailini bul','SZL-014 teminat mektubu ne zaman bitiyor?','A Blok kalıp planının son versiyonu','Murat Gül\'e 2 gün yıllık izin gir'];
+function botView(){
+  return `<div class="bot-h"><b>Yapı365 Asistan</b><small>Yetkiniz dahilindeki verilerde arar · ${ROLES[S.role].name}</small></div>
+  <div class="bot-m" id="botm">${BOT.msgs.map(m=>`<div class="msg ${m.a?'a':'u'}">${m.t}</div>`).join('')}</div>
+  <div class="sugg">${SUGG.map(s=>`<button onclick="ask(this.textContent)">${esc(s)}</button>`).join('')}</div>
+  <div class="bot-i"><input id="bq" placeholder="Bir şey sorun…" onkeydown="if(event.key==='Enter')ask(this.value)"><button class="btn" onclick="ask($('bq').value)">➤</button></div>`;
+}
+function toggleBot(){ BOT.open=!BOT.open; render(); }
+function ask(q){
+  q=(q||'').trim(); if(!q) return; BOT.msgs.push({a:false,t:esc(q)}); const n=norm(q); let a;
+  if(BOT.pending && /^(evet|onay|onayla|tamam)/.test(n)){ a=BOT.pending(); BOT.pending=null; }
+  else if(BOT.pending && /^(hayır|iptal|vazgeç)/.test(n)){ BOT.pending=null; a='İptal edildi, hiçbir kayıt değişmedi.'; }
+  else if(/mail|e-posta|eposta/.test(n)){
+    if(!can('MAIL')&&!can('SOZLESME')) a='Bu bilgiye erişim yetkiniz yok.';
+    else { const words=n.split(/\s+/).filter(w=>w.length>3&&!/mail|bul|gelen|geçen|ayki|kişisinden|'den|'dan/.test(w));
+      const hits=S.mails.filter(m=>words.some(w=>norm(m.from+' '+m.subject).includes(w.replace(/['’](den|dan|ten|tan)$/,'').slice(0,6))));
+      const lastMonth=/geçen ay/.test(n); const res=(lastMonth?hits.filter(m=>days(m.at)<-20):hits);
+      a=res.length?`${res.length} mail buldum${lastMonth?' (geçen ay)':''}:<div class="res">${res.map(m=>`<div>✉ <b>${esc(m.subject)}</b><br><span class="muted">${esc(m.from)} · ${fD(m.at)}</span><br><span class="muted">→ ${esc(m.res)}</span></div>`).join('<br>')}</div>`:'Eşleşen mail bulamadım. Gönderen adı veya konudan bir kelimeyle tekrar deneyin.'; }
+  }
+  else if(/teminat|sözleşme|szl-/.test(n)){
+    if(!can('SOZLESME')) a='Sözleşme verilerini görme yetkiniz yok.';
+    else { const c=S.contracts.find(c=>n.includes(norm(c.no)))||S.contracts.find(c=>norm(c.party).split(' ').some(w=>w.length>3&&n.includes(w)));
+      a=c?`<b>${c.no} · ${esc(c.party)}</b><div class="res">Bedel: ${fM(c.amount)} ₺<br>Bitiş: ${fD(c.end)} (${days(c.end)} gün)<br>${c.g?`Teminat: ${fM(c.g)} ₺ · mektup bitişi <b>${fD(c.gEnd)}</b> (${days(c.gEnd)} gün)`:'Teminat yok'}</div>`:`Teminatı 60 gün içinde biten sözleşmeler:<div class="res">${S.contracts.filter(c=>c.gEnd&&days(c.gEnd)<=60).map(c=>`${c.no} · ${esc(c.party)} → ${fD(c.gEnd)}`).join('<br>')}</div>`; }
+  }
+  else if(/versiyon|doküman|plan|dosya|proje/.test(n)){
+    if(!can('DOKUMAN')) a='Doküman görme yetkiniz yok.';
+    else { const words=n.split(/\s+/).filter(w=>w.length>3); const d=S.docs.map(d=>({d,s:words.filter(w=>norm(d.title+' '+d.folder).includes(w.slice(0,5))).length})).sort((x,y)=>y.s-x.s)[0];
+      a=d&&d.s?`<b>${esc(d.d.title)}</b><div class="res">Son versiyon: <b>v${d.d.v[0].n}</b> · ${esc(d.d.v[0].file)}<br>${esc(d.d.v[0].by)} · ${fD(d.d.v[0].at)}<br>Klasör: ${esc(d.d.folder)} · SharePoint ✓</div>`:'Doküman bulamadım.'; }
+  }
+  else if(/izin/.test(n)){
+    const p=Object.keys(S.puantaj).find(x=>n.includes(norm(x).split(' ')[0]));
+    const g=+(n.match(/(\d+)\s*gün/)||[0,1])[1];
+    if(!can('IK','E')) a=`Bu işlem için İK modülünde <b>Düzenle</b> yetkisi gerekiyor. Rolünüz: ${ROLES[S.role].name}.`;
+    else if(!p) a='Hangi personel için? Örn. "Murat Gül\'e 2 gün yıllık izin gir"';
+    else { a=`Şu kaydı oluşturacağım:<div class="res"><b>${p}</b> · Yıllık izin · ${g} gün · ${fD(addD(7))} başlangıç</div>Onaylıyor musunuz? <b>evet</b> / <b>iptal</b>`;
+      BOT.pending=()=>{ S.leaves.unshift({id:Date.now(),p,type:'Yıllık izin',from:addD(7),to:addD(7+g-1),dayCount:g,status:'Onay bekliyor',balance:12}); log('İK',p,`Asistan üzerinden ${g} gün izin talebi oluşturuldu`); return `✓ İzin talebi oluşturuldu ve İK onayına gönderildi. <a onclick="go('IK')">Görüntüle →</a>`; }; }
+  }
+  else a='Mailler, sözleşmeler, teminatlar, dokümanlar ve izinler hakkında sorabilirsiniz. Örnek: "geçen ay X firmasından gelen satın alma mailini bul".';
+  BOT.msgs.push({a:true,t:a}); render(); setTimeout(()=>$('bq')&&$('bq').focus(),0);
+}
+
+render();
+</script>
+</body>
+</html>

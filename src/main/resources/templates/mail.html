@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Mail Otomasyonu')}"></head>
+<body>
+<div class="app">
+    <aside th:replace="~{fragments/layout :: sidebar('mail')}"></aside>
+    <main class="main">
+        <header th:replace="~{fragments/layout :: topbar}"></header>
+        <div class="content">
+            <div th:replace="~{fragments/layout :: flash}"></div>
+            <h1>Mail Otomasyonu</h1>
+            <p class="sub">Paylaşılan posta kutusu Microsoft Graph ile okunur. Önce kurallar denenir; eşleşmezse yapay zekâ sınıflandırması devreye girer.</p>
+
+            <div class="grid g2">
+                <div class="card">
+                    <h2>Kural testi</h2>
+                    <form th:action="@{/mail/test}" method="post">
+                        <label>Gönderen</label><input name="sender" th:value="${testMail != null ? testMail.sender : 'muhasebe@demirkalip.com'}">
+                        <label>Konu</label><input name="subject" th:value="${testMail != null ? testMail.subject : 'Kasım ayı hakediş raporu'}">
+                        <label>İçerik</label><textarea name="body" rows="3" th:text="${testMail != null ? testMail.body : ''}"></textarea>
+                        <p><button class="btn">Hangi kurala düşer?</button></p>
+                    </form>
+                    <div th:if="${tested}">
+                        <div class="flash ok" th:if="${testResult != null}">
+                            Eşleşen kural: <b th:text="${testResult.name}"></b> → <span th:text="${testResult.actionType.label}"></span>
+                            <span th:if="${testResult.targetModule != null}" th:text="'(' + ${testResult.targetModule.label} + ')'"></span>
+                        </div>
+                        <div class="flash err" th:if="${testResult == null}">Hiçbir kural eşleşmedi → yapay zekâ sınıflandırmasına gider</div>
+                    </div>
+                </div>
+
+                <div class="card" sec:authorize="hasAuthority('MAIL:EDIT')">
+                    <h2>Yeni kural</h2>
+                    <form th:action="@{/mail/rules}" method="post">
+                        <div class="form-row">
+                            <div><label>Ad</label><input name="name" required></div>
+                            <div><label>Öncelik</label><input name="priority" type="number" value="100" required></div>
+                            <div><label>Gönderen içerir</label><input name="senderContains"></div>
+                            <div><label>Konu içerir</label><input name="subjectContains"></div>
+                        </div>
+                        <label>Anahtar kelimeler (virgülle)</label><input name="keywords">
+                        <div class="form-row">
+                            <div><label>Aksiyon</label><select name="actionType"><option th:each="a : ${actionTypes}" th:value="${a}" th:text="${a.label}"></option></select></div>
+                            <div><label>Modül</label><select name="targetModule"><option value="">-</option><option th:each="m : ${modules}" th:value="${m}" th:text="${m.label}"></option></select></div>
+                            <div><label>Hedef klasör</label><input name="targetFolder"></div>
+                            <div><label>Bildirilecek kişi</label><input name="notifyEmail" type="email"></div>
+                        </div>
+                        <p><button class="btn">Kural ekle</button></p>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Kurallar</h2>
+                <table>
+                    <tr><th>Öncelik</th><th>Ad</th><th>Koşullar</th><th>Aksiyon</th><th>Durum</th></tr>
+                    <tr th:each="r : ${rules}">
+                        <td th:text="${r.priority}"></td>
+                        <td><b th:text="${r.name}"></b></td>
+                        <td class="muted">
+                            <div th:if="${r.senderContains}" th:text="'Gönderen ∋ ' + ${r.senderContains}"></div>
+                            <div th:if="${r.subjectContains}" th:text="'Konu ∋ ' + ${r.subjectContains}"></div>
+                            <div th:if="${r.keywords}" th:text="'Kelime: ' + ${r.keywords}"></div>
+                        </td>
+                        <td><span th:text="${r.actionType.label}"></span>
+                            <span class="muted" th:if="${r.targetModule}" th:text="'· ' + ${r.targetModule.label}"></span>
+                            <span class="muted" th:if="${r.targetFolder}" th:text="'· ' + ${r.targetFolder}"></span>
+                            <span class="muted" th:if="${r.notifyEmail}" th:text="'· ' + ${r.notifyEmail}"></span></td>
+                        <td>
+                            <form th:action="@{/mail/rules/{id}/toggle(id=${r.id})}" method="post" sec:authorize="hasAuthority('MAIL:EDIT')">
+                                <button class="btn sm" th:classappend="${!r.active} ? 'sec'" th:text="${r.active} ? 'Aktif' : 'Pasif'"></button>
+                            </form>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="card">
+                <h2>İşlem kaydı</h2>
+                <table>
+                    <tr><th>Alındı</th><th>Gönderen</th><th>Konu</th><th>Sınıflandıran</th><th>Sonuç</th></tr>
+                    <tr th:each="l : ${logs}">
+                        <td th:text="${@fmt.dt(l.receivedAt)}"></td>
+                        <td th:text="${l.sender}"></td>
+                        <td th:text="${l.subject}"></td>
+                        <td><span class="badge" th:text="${l.classifiedBy}"></span></td>
+                        <td th:text="${l.actionResult}"></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

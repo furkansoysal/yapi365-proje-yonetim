@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('İşlem Geçmişi')}"></head>
+<body>
+<div class="app">
+    <aside th:replace="~{fragments/layout :: sidebar('audit')}"></aside>
+    <main class="main">
+        <header th:replace="~{fragments/layout :: topbar}"></header>
+        <div class="content">
+            <h1>İşlem Geçmişi</h1>
+            <p class="sub">Tüm kayıt değişiklikleri Hibernate Envers ile revizyon bazında saklanır</p>
+            <div class="card">
+                <table>
+                    <tr><th>#</th><th>Zaman</th><th>Kullanıcı</th><th>İşlem</th><th>Kayıt türü</th><th>Kayıt</th></tr>
+                    <tr th:each="e : ${entries}">
+                        <td class="muted" th:text="${e.revision}"></td>
+                        <td th:text="${@fmt.dt(e.when)}"></td>
+                        <td th:text="${e.user}"></td>
+                        <td><span class="badge" th:text="${e.action}"></span></td>
+                        <td th:text="${e.entity}"></td>
+                        <td th:text="${e.label}"></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

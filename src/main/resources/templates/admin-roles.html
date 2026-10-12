@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Roller ve Yetkiler')}"></head>
+<body>
+<div class="app">
+    <aside th:replace="~{fragments/layout :: sidebar('roles')}"></aside>
+    <main class="main">
+        <header th:replace="~{fragments/layout :: topbar}"></header>
+        <div class="content">
+            <div th:replace="~{fragments/layout :: flash}"></div>
+            <h1>Roller ve Yetkiler</h1>
+            <p class="sub">G = Görüntüle, D = Düzenle, O = Onayla. Kutucuğa tıklayarak yetki verip kaldırabilirsiniz.</p>
+            <div class="card" style="overflow-x:auto">
+                <table class="matrix">
+                    <tr>
+                        <th>Modül</th>
+                        <th th:each="r : ${roles}" th:text="${r.name}" style="font-size:11px;min-width:90px"></th>
+                    </tr>
+                    <tr th:each="m : ${modules}">
+                        <td th:text="${m.label}"></td>
+                        <td th:each="r : ${roles}" style="white-space:nowrap">
+                            <form th:each="a : ${actions}" th:action="@{/admin/roles/{id}/toggle(id=${r.id})}" method="post" style="display:inline">
+                                <input type="hidden" name="permission" th:value="${m.name() + ':' + a.name()}">
+                                <button class="dot" th:classappend="${r.permissions.contains(m.name() + ':' + a.name())} ? 'on'"
+                                        th:title="${m.label + ' - ' + a.label}"
+                                        th:text="${a.name() == 'VIEW'} ? 'G' : (${a.name() == 'EDIT'} ? 'D' : 'O')"
+                                        sec:authorize="hasAuthority('YONETIM:EDIT')"></button>
+                            </form>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="card">
+                <h2>Kullanıcılar</h2>
+                <table>
+                    <tr><th>Ad</th><th>E-posta (Microsoft 365)</th><th>Roller</th><th>Projeler</th></tr>
+                    <tr th:each="u : ${users}">
+                        <td th:text="${u.displayName}"></td>
+                        <td th:text="${u.email}"></td>
+                        <td><span class="badge" th:each="r : ${u.roles}" th:text="${r.name}"></span></td>
+                        <td><span class="badge" th:each="p : ${u.projects}" th:text="${p.code}"></span></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

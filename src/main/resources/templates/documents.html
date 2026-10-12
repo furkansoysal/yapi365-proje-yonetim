@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Dokümanlar')}"></head>
+<body>
+<div class="app">
+    <aside th:replace="~{fragments/layout :: sidebar('documents')}"></aside>
+    <main class="main">
+        <header th:replace="~{fragments/layout :: topbar}"></header>
+        <div class="content">
+            <div th:replace="~{fragments/layout :: flash}"></div>
+            <h1>Doküman Yönetimi</h1>
+            <p class="sub">Aynı klasöre aynı başlıkla yüklenen dosya yeni versiyon olur. Her versiyon arka planda SharePoint/OneDrive'a aktarılır.</p>
+
+            <div class="card" sec:authorize="hasAuthority('DOKUMAN:EDIT')">
+                <h2>Dosya yükle</h2>
+                <form th:action="@{/documents}" method="post" enctype="multipart/form-data">
+                    <div class="form-row">
+                        <div><label>Klasör</label><input name="folder" placeholder="Örn. Sözleşmeler/Alt Yüklenici" required></div>
+                        <div><label>Başlık (boşsa dosya adı)</label><input name="title"></div>
+                    </div>
+                    <label>Dosya</label><input type="file" name="file" required>
+                    <p><button class="btn">Yükle</button></p>
+                </form>
+            </div>
+
+            <div class="card" th:each="f : ${folders}">
+                <h2>📁 <span th:text="${f.key}"></span></h2>
+                <table>
+                    <tr><th>Başlık</th><th>Güncel versiyon</th><th></th></tr>
+                    <tr th:each="d : ${f.value}">
+                        <td th:text="${d.title}"></td>
+                        <td><span class="badge" th:text="'v' + ${d.currentVersion}"></span></td>
+                        <td><a th:href="@{/documents/{id}(id=${d.id})}">Versiyonlar →</a></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="card muted" th:if="${folders.isEmpty()}">Bu projede henüz doküman yok.</div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

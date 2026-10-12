@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Doküman')}"></head>
+<body>
+<div class="app">
+    <aside th:replace="~{fragments/layout :: sidebar('documents')}"></aside>
+    <main class="main">
+        <header th:replace="~{fragments/layout :: topbar}"></header>
+        <div class="content">
+            <p><a th:href="@{/documents}">← Dokümanlar</a></p>
+            <h1 th:text="${doc.title}"></h1>
+            <p class="sub" th:text="${doc.folderPath}"></p>
+            <div class="card">
+                <table>
+                    <tr><th>Versiyon</th><th>Dosya</th><th>Boyut</th><th>Yükleyen</th><th>Tarih</th><th>SharePoint</th><th>SHA-256</th><th></th></tr>
+                    <tr th:each="v : ${versions}">
+                        <td><b th:text="'v' + ${v.versionNo}"></b></td>
+                        <td th:text="${v.fileName}"></td>
+                        <td th:text="${@fmt.size(v.sizeBytes)}"></td>
+                        <td th:text="${v.uploadedBy}"></td>
+                        <td th:text="${@fmt.dt(v.uploadedAt)}"></td>
+                        <td>
+                            <span class="badge" th:classappend="${v.syncStatus.name() == 'SYNCED'} ? 'b-ok' : (${v.syncStatus.name() == 'FAILED'} ? 'b-bad' : '')"
+                                  th:text="${v.syncStatus.label}"></span>
+                            <a th:if="${v.webUrl}" th:href="${v.webUrl}" target="_blank">aç</a>
+                        </td>
+                        <td class="muted" style="font-family:monospace;font-size:11px" th:text="${#strings.substring(v.sha256,0,12)} + '…'"></td>
+                        <td><a th:href="@{/documents/versions/{id}/download(id=${v.id})}">İndir</a></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Sözleşme')}"></head>
+<body>
+<div class="app">
+    <aside th:replace="~{fragments/layout :: sidebar('contracts')}"></aside>
+    <main class="main">
+        <header th:replace="~{fragments/layout :: topbar}"></header>
+        <div class="content">
+            <p><a th:href="@{/contracts}">← Sözleşmeler</a></p>
+            <h1 th:text="${contract.id == null} ? 'Yeni sözleşme' : 'Sözleşme düzenle'"></h1>
+            <div class="card" style="max-width:760px">
+                <form th:action="@{/contracts/save}" th:object="${contract}" method="post">
+                    <input type="hidden" th:field="*{id}">
+                    <div class="form-row">
+                        <div><label>Tür</label>
+                            <select th:field="*{type}">
+                                <option value="">Seçin</option>
+                                <option th:each="t : ${types}" th:value="${t}" th:text="${t.label}"></option>
+                            </select>
+                            <div class="err-text" th:if="${#fields.hasErrors('type')}" th:errors="*{type}"></div>
+                        </div>
+                        <div><label>Sözleşme no</label><input th:field="*{contractNo}">
+                            <div class="err-text" th:if="${#fields.hasErrors('contractNo')}" th:errors="*{contractNo}"></div></div>
+                    </div>
+                    <label>Karşı taraf</label><input th:field="*{counterparty}">
+                    <div class="err-text" th:if="${#fields.hasErrors('counterparty')}" th:errors="*{counterparty}"></div>
+                    <label>Konu</label><input th:field="*{title}">
+                    <div class="err-text" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+                    <div class="form-row">
+                        <div><label>Başlangıç</label><input type="date" th:field="*{startDate}"></div>
+                        <div><label>Bitiş</label><input type="date" th:field="*{endDate}"></div>
+                        <div><label>Tutar</label><input type="number" step="0.01" th:field="*{amount}"></div>
+                        <div><label>Para birimi</label>
+                            <select th:field="*{currency}"><option>TRY</option><option>USD</option><option>EUR</option></select></div>
+                        <div><label>Teminat tutarı</label><input type="number" step="0.01" th:field="*{guaranteeAmount}"></div>
+                        <div><label>Teminat bitiş tarihi</label><input type="date" th:field="*{guaranteeExpiry}"></div>
+                    </div>
+                    <p><button class="btn">Kaydet</button></p>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

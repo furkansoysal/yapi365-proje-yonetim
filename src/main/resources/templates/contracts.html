@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Sözleşmeler')}"></head>
+<body>
+<div class="app">
+    <aside th:replace="~{fragments/layout :: sidebar('contracts')}"></aside>
+    <main class="main">
+        <header th:replace="~{fragments/layout :: topbar}"></header>
+        <div class="content">
+            <div th:replace="~{fragments/layout :: flash}"></div>
+            <div style="display:flex;justify-content:space-between;align-items:center">
+                <div><h1>Sözleşmeler</h1><p class="sub">Müşteri, alt yüklenici, tedarik ve dış hizmet sözleşmeleri; kritik tarih ve teminat takibi</p></div>
+                <a class="btn" sec:authorize="hasAuthority('SOZLESME:EDIT')" th:href="@{/contracts/new}">+ Yeni sözleşme</a>
+            </div>
+            <div class="card">
+                <table>
+                    <tr><th>No</th><th>Tür</th><th>Karşı taraf / Konu</th><th>Tutar</th><th>Bitiş</th><th>Teminat</th><th></th></tr>
+                    <tr th:each="c : ${contracts}">
+                        <td><b th:text="${c.contractNo}"></b></td>
+                        <td><span class="badge" th:text="${c.type.label}"></span></td>
+                        <td><span th:text="${c.counterparty}"></span><br><span class="muted" th:text="${c.title}"></span></td>
+                        <td th:text="${@fmt.money(c.amount)} + ' ' + ${c.currency}"></td>
+                        <td>
+                            <span th:text="${@fmt.d(c.endDate)}"></span>
+                            <span class="badge b-warn" th:if="${c.endDate != null and @fmt.daysLeft(c.endDate) >= 0 and @fmt.daysLeft(c.endDate) <= 60}"
+                                  th:text="${@fmt.daysLeft(c.endDate)} + ' gün'"></span>
+                        </td>
+                        <td>
+                            <span th:text="${@fmt.money(c.guaranteeAmount)}"></span>
+                            <span class="muted" th:if="${c.guaranteeExpiry}" th:text="'(' + ${@fmt.d(c.guaranteeExpiry)} + ')'"></span>
+                        </td>
+                        <td style="white-space:nowrap">
+                            <a sec:authorize="hasAuthority('SOZLESME:EDIT')" th:href="@{/contracts/{id}/edit(id=${c.id})}">Düzenle</a> ·
+                            <a th:href="@{/contracts/{id}/history(id=${c.id})}">Geçmiş</a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

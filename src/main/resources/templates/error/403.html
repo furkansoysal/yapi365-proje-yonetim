@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Yetki yok')}"></head>
+<body>
+<div class="login"><div class="box">
+    <h1>Bu sayfa için yetkiniz yok</h1>
+    <p class="sub">Rolünüz bu modül için gerekli yetkiyi içermiyor. Sistem yöneticinizle iletişime geçin.</p>
+    <a class="btn" th:href="@{/}">Gösterge paneline dön</a>
+</div></div>
+</body>
+</html>

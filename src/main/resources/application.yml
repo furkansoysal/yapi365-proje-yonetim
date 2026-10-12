@@ -1,0 +1,51 @@
+spring:
+  application:
+    name: yapi365
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:yapi365}
+    username: ${DB_USER:yapi365}
+    password: ${DB_PASSWORD:yapi365}
+  jpa:
+    hibernate:
+      ddl-auto: none          # şema Flyway ile yönetilir
+    properties:
+      org.hibernate.envers.store_data_at_delete: true
+  flyway:
+    enabled: true
+  servlet:
+    multipart:
+      max-file-size: 5GB      # büyük dosyalar diske akıtılır, belleğe alınmaz
+      max-request-size: 5GB
+      file-size-threshold: 2MB
+  thymeleaf:
+    cache: ${THYMELEAF_CACHE:true}
+
+server:
+  port: ${PORT:8080}
+  tomcat:
+    max-swallow-size: -1
+  servlet:
+    session:
+      timeout: 8h
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+
+app:
+  demo-data: ${DEMO_DATA:true}
+  storage:
+    dir: ${STORAGE_DIR:./data/files}
+  graph:
+    enabled: ${GRAPH_ENABLED:false}
+    tenant-id: ${GRAPH_TENANT_ID:}
+    client-id: ${GRAPH_CLIENT_ID:}
+    client-secret: ${GRAPH_CLIENT_SECRET:}
+    drive-id: ${GRAPH_DRIVE_ID:}
+    root-folder: ${GRAPH_ROOT_FOLDER:ProjeYonetim}
+    shared-mailbox: ${GRAPH_SHARED_MAILBOX:}
+  mail:
+    enabled: ${MAIL_ENABLED:false}
+    poll-interval-ms: 120000
